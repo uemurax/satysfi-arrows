@@ -30,6 +30,11 @@ val of-bth : (|
 
 val line : float                % width
 -> t
+val solid : (|
+  line-width : float;
+  head-width : float;
+  head-ext : float;
+|) -> t
 
 end = struct
 
@@ -57,8 +62,8 @@ let hm = h#metadata in
   draw = fun from to -> (
     let a = Arrow-Point.(arg (to - from)) in
     let grb-l = b#draw (|head = hm; tail = tm|) from to in
-    let grt-l = t#draw a |> List.map (Graphics.shift to) in
-    let grh-l = h#draw a |> List.map (Graphics.shift from) in
+    let grt-l = t#draw a |> List.map (Graphics.shift from) in
+    let grh-l = h#draw a |> List.map (Graphics.shift to) in
     [grb-l; grt-l; grh-l] |> List.concat
   )
 |)
@@ -69,6 +74,16 @@ let line w-f = of-bth (|
   body = ArrowBody.line w-f;
   tail = ArrowTail.none;
   head = ArrowHead.none;
+|)
+
+let solid rec = of-bth (|
+  body = ArrowBody.line rec#line-width;
+  tail = ArrowTail.none;
+  head = ArrowHead.vee (|
+    size = rec#head-width;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
 |)
 
 end

@@ -1,3 +1,11 @@
+@require: base/context
+@require: base/path
+@require: base/length
+@require: base/list-ext
+@require: base/fn
+@require: base/float
+@require: base/graphics
+
 @import: types
 
 module ArrowHead : sig
@@ -13,7 +21,18 @@ val read : arrow-body-metadata -> t -> context -> (|
   draw : float -> graphics list;
 |)
 
+val of-path : (arrow-body-metadata -> context -> (|
+  metadata : arrow-head-metadata;
+  path : path;
+  stroke : path -> graphics;
+|))-> t
+
 val none : t
+val vee : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
 
 end = struct
 
@@ -34,5 +53,40 @@ let none _ _ = (|
   |);
   draw = fun _ -> [];
 |)
+
+let of-path f body ctx =
+let rec = f body ctx in
+(|
+  metadata = rec#metadata;
+  draw = fun a -> (
+    let dx = Float.cos a in
+    let dy = Float.sin a in
+    let path = linear-transform-path dx (Float.neg dy) dy dx rec#path in
+    [rec#stroke path]
+  );
+|)
+
+let vee rec body ctx = of-path (fun body ctx -> (
+  let fs = Context.get-font-size ctx in
+  let color = Context.get-text-color ctx in
+  let d1 = fs *' rec#size |> Length.max (body#end-right -' body#end-left) in
+  let d2 = fs *' rec#ext in
+  let d = d1 +' d2 in
+  let nd = Length.neg d in
+  let path = (
+    List.fold-left (Fn.flip Path.line-to) (Path.start (nd, d)) [(0pt, 0pt); (nd, nd)]
+    |> Path.terminate
+  ) in
+  (|
+    metadata = (|
+      left = nd;
+      right = d;
+      length = d;
+      depth = Length.abs;
+    |);
+    path = path;
+    stroke = Graphics.stroke (fs *' rec#line-width) color;
+  |)
+)) body ctx
 
 end
