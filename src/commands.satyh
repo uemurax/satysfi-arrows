@@ -1,0 +1,32 @@
+@require: base/length
+@require: base/inline
+@require: base/list-ext
+
+@import: arrows
+
+module ArrowCommands : sig
+
+val \draw : [float; float; Arrow.t] math-cmd
+
+end = struct
+
+let draw pos-f len-f arr ctx =
+let fs = Context.get-font-size ctx in
+let pos = fs *' pos-f in
+let len = fs *' len-f in
+let rec = Arrow.read arr ctx in
+let md = rec#metadata in
+let from = (0pt, pos) in
+let w0 = md#body#length +' md#head#length +' md#tail#length in
+let w = Length.max len w0 in
+let to = (w, pos) in
+let gr-l = rec#draw from to in
+let l = Length.(min md#body#left (min md#head#left md#tail#left)) in
+let r = Length.(max md#body#right (max md#head#right md#tail#right)) in
+let h = pos -' l in
+let d = r -' pos in
+Inline.of-graphics w h d (fun pt -> List.map (Graphics.shift pt) gr-l)
+
+let-math \draw pos len arr = text-in-math MathRel (draw pos len arr)
+
+end

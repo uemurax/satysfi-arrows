@@ -1,0 +1,74 @@
+@require: pervasives
+@require: base/graphics
+@require: base/path
+@require: base/context
+
+type arrow-body-metadata = (|
+  left : length;
+  right : length;
+  length : length;
+|)
+type arrow-head-metadata = arrow-body-metadata
+type arrow-tail-metadata = arrow-head-metadata
+
+type arrow-metadata = (|
+  body : arrow-body-metadata;
+  head : arrow-head-metadata;
+  tail : arrow-tail-metadata;
+|)
+
+module Arrow : sig
+
+type t
+
+val make : (context -> (|
+  metadata : arrow-metadata;
+  draw : point -> point -> graphics list;
+|)) -> t
+val read : t -> context -> (|
+  metadata : arrow-metadata;
+  draw : point -> point -> graphics list;
+|)
+
+val line : float                % width
+-> t
+
+end = struct
+
+type t = context -> (|
+  metadata : arrow-metadata;
+  draw : point -> point -> graphics list;
+|)
+
+let make f = f
+let read rec ctx = rec ctx
+
+let meta-zero = (|
+  left = 0pt;
+  right = 0pt;
+  length = 0pt;
+|)
+
+let singleton x = [x]
+
+let line w-f ctx =
+let width = Context.get-font-size ctx *' w-f in
+let color = Context.get-text-color ctx in
+(|
+  metadata = (|
+    body = meta-zero;
+    head = meta-zero;
+    tail = meta-zero;
+  |);
+  draw = fun from to -> (
+    Path.(
+      start from
+      |> line-to to
+      |> terminate
+    )
+    |> Graphics.stroke width color
+    |> singleton
+  );
+|)
+
+end

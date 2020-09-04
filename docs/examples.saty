@@ -1,0 +1,21 @@
+@require: stdjareport
+
+@import: ../src/arrows
+@import: ../src/commands
+
+open ArrowCommands
+
+in
+
+document (|
+  title = {Arrow examples};
+  author = {Taichi Uemura};
+|) '<
+  +p{
+    ${a \draw!(0.25)!(1.)!(Arrow.line 0.05) b}
+  }
+>
+
+% Local Variables:
+% satysfi-program-options: ("-b" "--debug-show-bbox" "--debug-show-block-bbox")
+% End:
