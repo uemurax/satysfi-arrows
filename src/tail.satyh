@@ -1,0 +1,38 @@
+@import: types
+
+module ArrowTail : sig
+
+type t
+
+val make : (arrow-body-metadata -> context -> (|
+  metadata : arrow-tail-metadata;
+  draw : float -> graphics list;
+|)) -> t
+val read : arrow-body-metadata -> t -> context -> (|
+  metadata : arrow-tail-metadata;
+  draw : float -> graphics list;
+|)
+
+val none : t
+
+end = struct
+
+type t = arrow-body-metadata -> context -> (|
+  metadata : arrow-tail-metadata;
+  draw : float -> graphics list;
+|)
+
+let make f = f
+let read body rec ctx = rec body ctx
+
+let none _ _ = (|
+  metadata = (|
+    left = 0pt;
+    right = 0pt;
+    length = 0pt;
+    depth = fun _ -> 0pt;
+  |);
+  draw = fun _ -> [];
+|)
+
+end

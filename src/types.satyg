@@ -1,0 +1,20 @@
+type arrow-body-metadata = (|
+  mid-left : length;
+  mid-right : length;
+  end-left : length;
+  end-right : length;
+  length : length;
+|)
+type arrow-head-metadata = (|
+  left : length;
+  right : length;
+  length : length;
+  depth : length -> length;
+|)
+type arrow-tail-metadata = arrow-head-metadata
+
+type arrow-metadata = (|
+  body : arrow-body-metadata;
+  head : arrow-head-metadata;
+  tail : arrow-tail-metadata;
+|)

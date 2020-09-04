@@ -2,20 +2,12 @@
 @require: base/graphics
 @require: base/path
 @require: base/context
+@require: base/list-ext
 
-type arrow-body-metadata = (|
-  left : length;
-  right : length;
-  length : length;
-|)
-type arrow-head-metadata = arrow-body-metadata
-type arrow-tail-metadata = arrow-head-metadata
-
-type arrow-metadata = (|
-  body : arrow-body-metadata;
-  head : arrow-head-metadata;
-  tail : arrow-tail-metadata;
-|)
+@import: types
+@import: body
+@import: head
+@import: tail
 
 module Arrow : sig
 
@@ -30,6 +22,12 @@ val read : t -> context -> (|
   draw : point -> point -> graphics list;
 |)
 
+val of-bth : (|
+  body : ArrowBody.t;
+  tail : ArrowTail.t;
+  head : ArrowHead.t;
+|) -> t
+
 val line : float                % width
 -> t
 
@@ -43,32 +41,34 @@ type t = context -> (|
 let make f = f
 let read rec ctx = rec ctx
 
-let meta-zero = (|
-  left = 0pt;
-  right = 0pt;
-  length = 0pt;
+let of-bth rec ctx =
+let b = ArrowBody.read rec#body ctx in
+let bm = b#metadata in
+let t = ArrowTail.read bm rec#tail ctx in
+let tm = t#metadata in
+let h = ArrowHead.read bm rec#head ctx in
+let hm = h#metadata in
+(|
+  metadata = (|
+    body = bm;
+    head = hm;
+    tail = tm;
+  |);
+  draw = fun from to -> (
+    let a = Arrow-Point.(arg (to - from)) in
+    let grb-l = b#draw (|head = hm; tail = tm|) from to in
+    let grt-l = t#draw a |> List.map (Graphics.shift to) in
+    let grh-l = h#draw a |> List.map (Graphics.shift from) in
+    [grb-l; grt-l; grh-l] |> List.concat
+  )
 |)
 
 let singleton x = [x]
 
-let line w-f ctx =
-let width = Context.get-font-size ctx *' w-f in
-let color = Context.get-text-color ctx in
-(|
-  metadata = (|
-    body = meta-zero;
-    head = meta-zero;
-    tail = meta-zero;
-  |);
-  draw = fun from to -> (
-    Path.(
-      start from
-      |> line-to to
-      |> terminate
-    )
-    |> Graphics.stroke width color
-    |> singleton
-  );
+let line w-f = of-bth (|
+  body = ArrowBody.line w-f;
+  tail = ArrowTail.none;
+  head = ArrowHead.none;
 |)
 
 end

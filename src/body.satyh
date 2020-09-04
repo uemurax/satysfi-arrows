@@ -1,0 +1,68 @@
+@require: pervasives
+@require: base/context
+@require: base/path
+@require: base/graphics
+
+@import: types
+@import: lib/point
+
+module ArrowBody : sig
+
+type t
+
+val make : (context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)) -> t
+val read : t -> context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)
+
+val line : float -> t
+
+end = struct
+
+type t = context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)
+
+let make f = f
+let read body ctx = body ctx
+
+let line w-f ctx =
+let width = Context.get-font-size ctx *' w-f in
+let color = Context.get-text-color ctx in
+(|
+  metadata = (|
+    mid-left = 0pt;
+    mid-right = 0pt;
+    end-left = 0pt;
+    end-right = 0pt;
+    length = 0pt;
+  |);
+  draw = fun rec from to -> (
+    let h = rec#head#depth 0pt in
+    let t = rec#tail#depth 0pt in
+    let rt = Arrow-Point.(ratio (to - from)) in
+    Path.(
+      start Arrow-Point.(from + of-ratio t rt)
+      |> line-to Arrow-Point.(to - of-ratio h rt)
+      |> terminate
+    )
+    |> Graphics.stroke width color
+    |> (fun x -> [x])
+  );
+|)
+
+end

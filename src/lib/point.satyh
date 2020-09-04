@@ -1,0 +1,54 @@
+@require: pervasives
+@require: base/float
+
+module Arrow-Point : sig
+
+val ratio : point -> float * float
+val arg : point -> float
+val (+) : point -> point -> point
+val (-) : point -> point -> point
+val scale : point -> float -> point
+val of-ratio : length -> float * float -> point
+
+end = struct
+
+let binop f (x1, y1) (x2, y2) = (f x1 x2, f y1 y2)
+let (+) = binop (+')
+let (-) = binop (-')
+
+let map f (x, y) = (f x, f y)
+let scale pt s = map (fun x -> x *' s) pt
+
+let of-ratio l = map (fun x -> l *' x)
+
+let norm (x, y) =
+let s = Float.(max (abs x) (abs y)) in
+if Float.is-zero s then 0.
+else (
+  let t = 1. /. s in
+  let x1 = x *. t in
+  let y1 = y *. t in
+  let n1 = Float.sqrt (x1 *. x1 +. y1 *. y1) in
+  n1 *. s
+)
+
+let ratio-f (x, y) =
+let n = norm (x, y) in
+if Float.is-zero n then (1., 0.)
+else (
+  let s = 1. /. n in
+  (x *. s, y *. s)
+)
+
+let ratio (x, y) =
+let x-f = x /' 1pt in
+let y-f = y /' 1pt in
+ratio-f (x-f, y-f)
+
+let arg (x, y) =
+let x-f = x /' 1pt in
+let y-f = y /' 1pt in
+if Float.(is-zero x-f && is-zero y-f) then 0.
+else Float.atan2 y-f x-f
+
+end
