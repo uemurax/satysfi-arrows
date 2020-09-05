@@ -1,0 +1,69 @@
+@require: stdjareport
+
+document (|
+  title = {Arrows manual};
+  author = {Taichi Uemura};
+|) '<
+  +chapter{Basic usage}<
+    +section{The `Arrow` module}<
+      +p{
+        The `arrows/arrows` package provides the `Arrow` module .
+      }
+      +code(```
+type t
+```);
+      +p{
+        This is the arrow type.
+      }
+      +code(```
+val read : t -> context -> (|
+  metadata : arrow-metadata;
+  draw : point -> point -> graphics list;
+|)
+```);
+      +p{
+        The `read` function is a destructor for the type `t`.
+        Use `draw` to draw the arrow as a list of graphics.
+        `metadata` contains metadata like the size of the arrow head and the interval of the arrow body,
+        and is intended to be used for placing labels and for stretching the arrow, for example.
+        See Section \ref(`metadata`); for details of the type `arrow-metadata`.
+      }
+      +code(```
+val solid : (|
+  line-width : float;
+  head-size : float;
+|) -> t
+```);
+      +p{
+        For quick construction of arrows, the `Arrow` module provides some preconfigured arrows like `solid`, `dashed`, `tail`, `harpoon-l` and `mapsto`.
+        See Section \ref(`preconfigured-arrows`); for full details.
+      }
+      +code(```
+val of-bth : (|
+  body : ArrowBody.t;
+  tail : ArrowTail.t;
+  head : ArrowHead.t;
+|) -> t
+```);
+      +p{
+        The `of-bth` function constructs an arrow from an arrow body, an arrow tail, and an arrow head.
+        Most arrow bodies, tails, and heads are designed such that they can be used in arbitrary combination.
+        See Sections \ref(`arrow-body`);, \ref(`arrow-head`); and \ref(`arrow-tail`); for details of these components.
+      }
+    >
+    +section?:(`arrow-body`){The `ArrowBody` module}<
+    >
+    +section?:(`arrow-head`){The `ArrowHead` module}<
+    >
+    +section?:(`arrow-tail`){The `ArrowTail` module}<
+    >
+    +section?:(`metadata`){Metadata}<
+    >
+  >
+  +chapter{Package reference}<
+    +section{The `Arrow` module}<
+      +subsection?:(`preconfigured-arrows`){Preconfigured arrows}<
+      >
+    >
+  >
+>
