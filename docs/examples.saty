@@ -141,7 +141,7 @@ document (|
   });
   +math(${
     A \draw!(Arrow.of-bth (|
-      body = ArrowBody.multi-solid  4 0.15 (|
+      body = ArrowBody.multi-solid 4 0.15 (|
         width = 0.05;
       |);
       head = ArrowHead.vee (|
@@ -164,6 +164,28 @@ document (|
       tail-size = 0.15;
       tail-ext = 0.07;
     |)){g \circ f} y \in B
+  });
+  +math(${
+    X \xleftarrow!(Arrow.of-bth (|
+      body = ArrowBody.(multiple 3 0.15 (dashed (|
+        width = 0.05;
+        dash = (|
+          fill = 0.1;
+          space = 0.1;
+          shift = 0.;
+        |);
+      |)));
+      head = ArrowHead.harpoon-l (|
+        line-width = 0.05;
+        size = 0.12;
+        ext = 0.2;
+      |);
+      tail = ArrowTail.hook-r (|
+        line-width = 0.05;
+        size = 0.12;
+        ext = 0.2;
+      |);
+    |)){f}
   });
 >
 

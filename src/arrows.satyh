@@ -28,6 +28,8 @@ val of-bth : (|
   head : ArrowHead.t;
 |) -> t
 
+val invert : t -> t
+
 val line : (|
   width : float;
 |) -> t
@@ -128,6 +130,34 @@ let hm = h#metadata in
     let grh-l = h#draw a |> List.map (Graphics.shift to) in
     [grb-l; grt-l; grh-l] |> List.concat
   )
+|)
+
+let invert arr ctx =
+let a = arr ctx in
+let md = a#metadata in
+(|
+  metadata = (|
+    body = (|
+      md#body with
+      end-left = Length.neg md#body#end-right;
+      end-right = Length.neg md#body#end-left;
+      mid-left = Length.neg md#body#mid-right;
+      mid-right = Length.neg md#body#mid-left;
+    |);
+    head = (|
+      md#tail with
+      left = Length.neg md#tail#right;
+      right = Length.neg md#tail#left;
+      depth = fun p -> md#tail#depth (Length.neg p);
+    |);
+    tail = (|
+      md#head with
+      left = Length.neg md#head#right;
+      right = Length.neg md#head#left;
+      depth = fun p -> md#head#depth (Length.neg p);
+    |);
+  |);
+  draw = fun from to -> a#draw to from;
 |)
 
 let line rec = of-bth (|

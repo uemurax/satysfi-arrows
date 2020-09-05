@@ -10,6 +10,7 @@ module ArrowCommands : sig
 
 val \draw : [float?; float?; Arrow.t] math-cmd
 val \xrightarrow : [float?; float?; Arrow.t; float?; math] math-cmd
+val \xleftarrow : [float?; float?; Arrow.t; float?; math] math-cmd
 
 end = struct
 
@@ -73,10 +74,16 @@ let d = r -' pos in
 let gr-l = arr-gr-l |> List.cons (Graphics.shift (tail-len +' body-len *' 0.5 -' (x0 +' x1) *' 0.5, (Length.neg mb#mid-left +' label-pd +' pos) -' y0) label-gr) in
 Inline.of-graphics w h d (fun pt -> List.map (Graphics.shift pt) gr-l)
 
-let-math \xrightarrow ?:pos-f-o ?:len-f-o arr ?:label-pd-f-o label-m =
+let arrow-scheme f ?:pos-f-o ?:len-f-o arr ?:label-pd-f-o label-m =
 let pos-f = pos-f-o |> Option.unwrap-or 0.25 in
 let len-f = len-f-o |> Option.unwrap-or 1. in
 let label-pd-f = label-pd-f-o |> Option.unwrap-or 0.2 in
-text-in-math MathRel (xrightarrow pos-f len-f arr label-pd-f label-m)
+text-in-math MathRel (f pos-f len-f arr label-pd-f label-m)
+
+let-math \xrightarrow = arrow-scheme xrightarrow
+
+let xleftarrow pos-f len-f arr = xrightarrow pos-f len-f (Arrow.invert arr)
+
+let-math \xleftarrow = arrow-scheme xleftarrow
 
 end
