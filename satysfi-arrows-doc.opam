@@ -1,0 +1,35 @@
+opam-version: "2.0"
+name: "satysfi-arrows-doc"
+version: "1.0"
+synopsis: "A SATySFi arrows library"
+description: """
+A SATySFi library for drawing arrows.
+This package provides documentation for the package.
+
+This requires Satyrographos to install. See https://github.com/na4zagin3/satyrographos.
+"""
+maintainer: "Taichi Uemura <t.uemura00@gmail.com>"
+authors: "Taichi Uemura <t.uemura00@gmail.com>"
+license: "MIT"
+homepage: "https://github.com/uemurax/satysfi-arrows"
+bug-reports: "https://github.com/uemurax/satysfi-arrows/issues"
+dev-repo: "git+https://github.com/uemurax/satysfi-arrows.git"
+depends: [
+  "satysfi" {>= "0.0.5" & < "0.0.6"}
+  "satyrographos" {>= "0.0.2" & < "0.0.3"}
+  "satysfi-dist" {>= "0.0.5" & < "0.0.6"}
+  "satysfi-arrows" {= "%{version}%"}
+]
+build: [
+  ["satyrographos" "opam" "build"
+   "-name" "arrows-doc"
+   "-prefix" "%{prefix}%"
+   "-script" "%{build}%/Satyristes"
+  ]
+]
+install: [
+  ["satyrographos" "opam" "install"
+   "-name" "arrows-doc"
+   "-prefix" "%{prefix}%"
+   "-script" "%{build}%/Satyristes"]
+]
