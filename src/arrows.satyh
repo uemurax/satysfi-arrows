@@ -13,10 +13,6 @@ module Arrow : sig
 
 type t
 
-val make : (context -> (|
-  metadata : arrow-metadata;
-  draw : point -> point -> graphics list;
-|)) -> t
 val read : t -> context -> (|
   metadata : arrow-metadata;
   draw : point -> point -> graphics list;
@@ -30,6 +26,7 @@ val of-bth : (|
 
 val invert : t -> t
 
+% standard arrows
 val line : (|
   width : float;
 |) -> t
@@ -99,6 +96,12 @@ val mapsto : (|
   tail-size : float;
   tail-ext : float;
 |) -> t
+
+% if you need define an arrow directly...
+val make : (context -> (|
+  metadata : arrow-metadata;
+  draw : point -> point -> graphics list;
+|)) -> t
 
 end = struct
 

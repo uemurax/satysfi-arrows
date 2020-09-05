@@ -14,29 +14,13 @@ module ArrowTail : sig
 
 type t
 
-val make : (arrow-body-metadata -> context -> (|
-  metadata : arrow-tail-metadata;
-  draw : float -> graphics list;
-|)) -> t
-val read : arrow-body-metadata -> t -> context -> (|
-  metadata : arrow-tail-metadata;
-  draw : float -> graphics list;
-|)
-
-val of-path : (arrow-body-metadata -> context -> (|
-  metadata : arrow-tail-metadata;
-  path : path;
-  stroke : path -> graphics;
-|)) -> t
-
-val to-head : t -> ArrowHead.t
-val from-head : ArrowHead.t -> t
-
+% arrow tail transformers
 val none : t
 val union : t -> t -> t
 val shift : bool -> float -> t -> t
 val duplicate : bool -> int -> float -> t -> t
 
+% standard arrow tails
 val vee : (|
   size : float;
   ext : float;
@@ -62,6 +46,25 @@ val vdash : (|
   ext : float;
   line-width : float;
 |) -> t
+
+% head <-> tail converters
+val to-head : t -> ArrowHead.t
+val from-head : ArrowHead.t -> t
+
+% mainly for internal usage
+val of-path : (arrow-body-metadata -> context -> (|
+  metadata : arrow-tail-metadata;
+  path : path;
+  stroke : path -> graphics;
+|)) -> t
+val make : (arrow-body-metadata -> context -> (|
+  metadata : arrow-tail-metadata;
+  draw : float -> graphics list;
+|)) -> t
+val read : arrow-body-metadata -> t -> context -> (|
+  metadata : arrow-tail-metadata;
+  draw : float -> graphics list;
+|)
 
 end = struct
 

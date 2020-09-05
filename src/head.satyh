@@ -14,26 +14,13 @@ module ArrowHead : sig
 
 type t
 
-val make : (arrow-body-metadata -> context -> (|
-  metadata : arrow-head-metadata;
-  draw : float -> graphics list;
-|)) -> t
-val read : arrow-body-metadata -> t -> context -> (|
-  metadata : arrow-head-metadata;
-  draw : float -> graphics list;
-|)
-
-val of-path : (arrow-body-metadata -> context -> (|
-  metadata : arrow-head-metadata;
-  path : path;
-  stroke : path -> graphics;
-|))-> t
-
+% arrow head transformers
 val none : t
 val union : t -> t -> t
 val shift : bool -> float -> t ->t
 val duplicate : bool -> int -> float -> t -> t
 
+% standard arrow heads
 val vee : (|
   size : float;
   ext : float;
@@ -59,6 +46,21 @@ val harpoon-r : (|
   ext : float;
   line-width : float;
 |) -> t
+
+% mainly for internal usage
+val of-path : (arrow-body-metadata -> context -> (|
+  metadata : arrow-head-metadata;
+  path : path;
+  stroke : path -> graphics;
+|))-> t
+val make : (arrow-body-metadata -> context -> (|
+  metadata : arrow-head-metadata;
+  draw : float -> graphics list;
+|)) -> t
+val read : arrow-body-metadata -> t -> context -> (|
+  metadata : arrow-head-metadata;
+  draw : float -> graphics list;
+|)
 
 % for internal usage
 val from-ht : ArrowHeadTail.t -> t

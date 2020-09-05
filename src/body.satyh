@@ -12,26 +12,13 @@ module ArrowBody : sig
 
 type t
 
-val make : (context -> (|
-  metadata : arrow-body-metadata;
-  draw : (|
-    head : arrow-head-metadata;
-    tail : arrow-tail-metadata;
-  |) -> point -> point -> graphics list;
-|)) -> t
-val read : t -> context -> (|
-  metadata : arrow-body-metadata;
-  draw : (|
-    head : arrow-head-metadata;
-    tail : arrow-tail-metadata;
-  |) -> point -> point -> graphics list;
-|)
-
+% arrow body transformers
 val none : t
 val union : t -> t -> t
 val shift : length -> t -> t
 val multiple : int -> float -> t -> t
 
+% standard arrow bodies
 val line : (context -> (|head : length; tail : length|) -> path -> graphics) -> t
 val solid : (|
   width : float;
@@ -47,6 +34,22 @@ val dashed : (|
     shift : float;
   |);
 |) -> t
+
+% mainly for internal usage
+val make : (context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)) -> t
+val read : t -> context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)
 
 end = struct
 
