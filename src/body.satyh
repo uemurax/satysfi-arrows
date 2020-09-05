@@ -32,11 +32,20 @@ val union : t -> t -> t
 val shift : length -> t -> t
 val multiple : int -> float -> t -> t
 
-val line : (|
+val line : (context -> (|head : length; tail : length|) -> path -> graphics) -> t
+val solid : (|
   width : float;
 |) -> t
-val multi-line : int -> float -> (|
+val multi-solid : int -> float -> (|
   width : float;
+|) -> t
+val dashed : (|
+  width : float;
+  dash : (|
+    fill : float;
+    space : float;
+    shift : float;
+  |);
 |) -> t
 
 end = struct
@@ -128,10 +137,7 @@ let-rec aux acc p n = (
 ) in
 aux none (d *' Float.(0.5 *. of-int (n - 1))) n ctx
 
-let line rec ctx =
-let w-f = rec#width in
-let width = Context.get-font-size ctx *' w-f in
-let color = Context.get-text-color ctx in
+let line stroke ctx =
 (|
   metadata = (|
     mid-left = 0pt;
@@ -149,11 +155,34 @@ let color = Context.get-text-color ctx in
       |> line-to Arrow-Point.(to - of-ratio h rt)
       |> terminate
     )
-    |> Graphics.stroke width color
+    |> stroke ctx (|
+      head = h;
+      tail = t;
+    |)
     |> (fun x -> [x])
   );
 |)
 
-let multi-line n d rec = multiple n d (line rec)
+let solid rec =
+let stroke ctx _ = (
+  let w-f = rec#width in
+  let width = Context.get-font-size ctx *' w-f in
+  let color = Context.get-text-color ctx in
+  Graphics.stroke width color
+) in
+line stroke
+
+let multi-solid n d rec = multiple n d (solid rec)
+
+let dashed rec =
+let stroke ctx ht = (
+  let w-f = rec#width in
+  let fs = Context.get-font-size ctx in
+  let width = fs *' w-f in
+  let color = Context.get-text-color ctx in
+  let dash = (fs *' rec#dash#fill, fs *' rec#dash#space, fs *' rec#dash#shift +' ht#tail) in
+  Graphics.dashed-stroke width dash color
+) in
+line stroke
 
 end

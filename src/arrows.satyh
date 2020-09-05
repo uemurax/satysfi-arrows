@@ -44,6 +44,16 @@ val multi-solid : int -> float -> (|
   head-size : float;
   head-ext : float;
 |) -> t
+val dashed : (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+  dash : (|
+    fill : float;
+    space : float;
+    shift : float;
+  |);
+|) -> t
 val tail : (|
   line-width : float;
   head-size : float;
@@ -90,19 +100,19 @@ let hm = h#metadata in
 |)
 
 let line rec = of-bth (|
-  body = ArrowBody.line rec;
+  body = ArrowBody.solid rec;
   tail = ArrowTail.none;
   head = ArrowHead.none;
 |)
 
 let multi-line n d rec = of-bth (|
-  body = ArrowBody.multi-line n d rec;
+  body = ArrowBody.multi-solid n d rec;
   tail = ArrowTail.none;
   head = ArrowHead.none;
 |)
 
 let solid rec = of-bth (|
-  body = ArrowBody.line (|
+  body = ArrowBody.solid (|
     width = rec#line-width;
   |);
   tail = ArrowTail.none;
@@ -114,7 +124,7 @@ let solid rec = of-bth (|
 |)
 
 let multi-solid n d rec = of-bth (|
-  body = ArrowBody.multi-line n d (|
+  body = ArrowBody.multi-solid n d (|
     width = rec#line-width;
   |);
   tail = ArrowTail.none;
@@ -125,8 +135,21 @@ let multi-solid n d rec = of-bth (|
   |);
 |)
 
+let dashed rec = of-bth (|
+  body = ArrowBody.dashed (|
+    width = rec#line-width;
+    dash = rec#dash;
+  |);
+  tail = ArrowTail.none;
+  head = ArrowHead.vee (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
 let tail rec = of-bth (|
-  body = ArrowBody.line (|
+  body = ArrowBody.solid (|
     width = rec#line-width;
   |);
   tail = ArrowTail.vee (|
@@ -142,7 +165,7 @@ let tail rec = of-bth (|
 |)
 
 let multi-head n d rec = of-bth (|
-  body = ArrowBody.line (|
+  body = ArrowBody.solid (|
     width = rec#line-width;
   |);
   tail = ArrowTail.none;
