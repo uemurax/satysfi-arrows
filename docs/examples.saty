@@ -18,22 +18,31 @@ document (|
   +math(${
     a \draw!(Arrow.solid (|
       line-width = 0.05;
-      head-width = 0.15;
+      head-size = 0.15;
       head-ext = 0.07;
     |)) b
   });
   +math(${
     a \xrightarrow!(Arrow.solid (|
       line-width = 0.05;
-      head-width = 0.15;
+      head-size = 0.15;
       head-ext = 0.07;
     |)){f} b
   });
   +math(${
     a \xrightarrow!(Arrow.solid (|
       line-width = 0.05;
-      head-width = 0.15;
+      head-size = 0.15;
       head-ext = 0.07;
+    |)){ccccccccccccc} b
+  });
+  +math(${
+    a \xrightarrow!(Arrow.tail (|
+      line-width = 0.05;
+      head-size = 0.15;
+      head-ext = 0.07;
+      tail-size = 0.15;
+      tail-ext = 0.07;
     |)){ccccccccccccc} b
   });
 >

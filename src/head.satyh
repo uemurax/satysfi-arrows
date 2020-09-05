@@ -66,7 +66,7 @@ let rec = f body ctx in
   );
 |)
 
-let vee rec body ctx = of-path (fun body ctx -> (
+let vee rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in
   let color = Context.get-text-color ctx in
   let d1 = fs *' rec#size |> Length.max (body#end-right -' body#end-left) in
@@ -87,6 +87,6 @@ let vee rec body ctx = of-path (fun body ctx -> (
     path = path;
     stroke = Graphics.stroke (fs *' rec#line-width) color;
   |)
-)) body ctx
+))
 
 end

@@ -32,8 +32,15 @@ val line : float                % width
 -> t
 val solid : (|
   line-width : float;
-  head-width : float;
+  head-size : float;
   head-ext : float;
+|) -> t
+val tail : (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+  tail-size : float;
+  tail-ext : float;
 |) -> t
 
 end = struct
@@ -68,8 +75,6 @@ let hm = h#metadata in
   )
 |)
 
-let singleton x = [x]
-
 let line w-f = of-bth (|
   body = ArrowBody.line w-f;
   tail = ArrowTail.none;
@@ -80,7 +85,21 @@ let solid rec = of-bth (|
   body = ArrowBody.line rec#line-width;
   tail = ArrowTail.none;
   head = ArrowHead.vee (|
-    size = rec#head-width;
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let tail rec = of-bth (|
+  body = ArrowBody.line rec#line-width;
+  tail = ArrowTail.vee (|
+    size = rec#tail-size;
+    ext = rec#tail-ext;
+    line-width = rec#line-width;
+  |);
+  head = ArrowHead.vee (|
+    size = rec#head-size;
     ext = rec#head-ext;
     line-width = rec#line-width;
   |);
