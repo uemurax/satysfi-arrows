@@ -2,6 +2,8 @@
 @require: base/context
 @require: base/path
 @require: base/graphics
+@require: base/length
+@require: base/float
 
 @import: types
 @import: lib/point
@@ -25,7 +27,16 @@ val read : t -> context -> (|
   |) -> point -> point -> graphics list;
 |)
 
+val none : t
+val union : t -> t -> t
+val shift : length -> t -> t
+val multiple : int -> float -> t -> t
+
 val line : float -> t
+val multi-line : int -> (|
+  width : float;
+  distance : float;
+|) -> t
 
 end = struct
 
@@ -39,6 +50,82 @@ type t = context -> (|
 
 let make f = f
 let read body ctx = body ctx
+
+let none _ = (|
+  metadata = (|
+    mid-left = 0pt;
+    mid-right = 0pt;
+    end-left = 0pt;
+    end-right = 0pt;
+    length = 0pt;
+  |);
+  draw = fun _ _ _ -> [];
+|)
+
+let union body1 body2 ctx =
+let b1 = body1 ctx in
+let b2 = body2 ctx in
+let m1 = b1#metadata in
+let m2 = b2#metadata in
+(|
+  metadata = (|
+    mid-left = Length.min m1#mid-left m2#mid-left;
+    mid-right = Length.max m1#mid-right m2#mid-right;
+    end-left = Length.min m1#end-left m2#end-left;
+    end-right = Length.max m1#end-right m2#end-right;
+    length = Length.max m1#length m2#length;
+  |);
+  draw = fun rec from to -> (
+    let gr-l1 = b1#draw rec from to in
+    let gr-l2 = b2#draw rec from to in
+    List.concat [gr-l1; gr-l2]
+  );
+|)
+
+let shift p body ctx =
+let b = body ctx in
+let m = b#metadata in
+(|
+  metadata = (|
+    m with
+    mid-left = m#mid-left +' p;
+    mid-right = m#mid-right +' p;
+    end-left = m#end-left +' p;
+    end-right = m#end-right +' p;
+  |);
+  draw = fun rec from to -> (
+    let (x, y) = Arrow-Point.(ratio (to - from)) in
+    let r1 = Float.((y, neg x)) in
+    let d = Arrow-Point.of-ratio p r1 in
+    let z = Arrow-Point.(from + d) in
+    let w = Arrow-Point.(to + d) in
+    let tail1 = (|
+      rec#tail with
+      depth = fun q -> rec#tail#depth (q +' p)
+    |) in
+    let head1 = (|
+      rec#head with
+      depth = fun q -> rec#head#depth (q +' p)
+    |) in
+    b#draw (|head = head1; tail = tail1|) z w
+  )
+|)
+
+let multiple n pd body ctx =
+let b = body ctx in
+let m = b#metadata in
+let w = Length.(max m#mid-right m#end-right -' min m#mid-left m#end-left) in
+let d = w +' get-font-size ctx *' pd in
+let-rec aux acc p n = (
+  if n <= 0 then acc
+  else (
+    let b1 = shift p body in
+    let p1 = p -' d in
+    let acc1 = union b1 acc in
+    aux acc1 p1 (n - 1)
+  )
+) in
+aux none (d *' Float.(0.5 *. of-int (n - 1))) n ctx
 
 let line w-f ctx =
 let width = Context.get-font-size ctx *' w-f in
@@ -64,5 +151,7 @@ let color = Context.get-text-color ctx in
     |> (fun x -> [x])
   );
 |)
+
+let multi-line n rec = multiple n rec#distance (line rec#width)
 
 end

@@ -30,10 +30,20 @@ val of-bth : (|
 
 val line : float                % width
 -> t
+val multi-line : int -> (|
+  width : float;
+  distance : float;
+|) -> t
 val solid : (|
   line-width : float;
   head-size : float;
   head-ext : float;
+|) -> t
+val multi-solid : int -> (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+  distance : float;
 |) -> t
 val tail : (|
   line-width : float;
@@ -81,8 +91,27 @@ let line w-f = of-bth (|
   head = ArrowHead.none;
 |)
 
+let multi-line n rec = of-bth (|
+  body = ArrowBody.multi-line n rec;
+  tail = ArrowTail.none;
+  head = ArrowHead.none;
+|)
+
 let solid rec = of-bth (|
   body = ArrowBody.line rec#line-width;
+  tail = ArrowTail.none;
+  head = ArrowHead.vee (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let multi-solid n rec = of-bth (|
+  body = ArrowBody.multi-line n (|
+    width = rec#line-width;
+    distance = rec#distance;
+  |);
   tail = ArrowTail.none;
   head = ArrowHead.vee (|
     size = rec#head-size;
