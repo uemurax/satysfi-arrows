@@ -76,6 +76,20 @@ val harpoon-r : (|
   head-size : float;
   head-ext : float;
 |) -> t
+val hook-l : (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+  tail-size : float;
+  tail-ext : float;
+|) -> t
+val hook-r : (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+  tail-size : float;
+  tail-ext : float;
+|) -> t
 
 end = struct
 
@@ -204,6 +218,38 @@ let harpoon-r rec = of-bth (|
   |);
   tail = ArrowTail.none;
   head = ArrowHead.harpoon-r (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let hook-l rec = of-bth (|
+  body = ArrowBody.solid (|
+    width = rec#line-width;
+  |);
+  tail = ArrowTail.hook-l (|
+    size = rec#tail-size;
+    ext = rec#tail-ext;
+    line-width = rec#line-width;
+  |);
+  head = ArrowHead.vee (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let hook-r rec = of-bth (|
+  body = ArrowBody.solid (|
+    width = rec#line-width;
+  |);
+  tail = ArrowTail.hook-r (|
+    size = rec#tail-size;
+    ext = rec#tail-ext;
+    line-width = rec#line-width;
+  |);
+  head = ArrowHead.vee (|
     size = rec#head-size;
     ext = rec#head-ext;
     line-width = rec#line-width;

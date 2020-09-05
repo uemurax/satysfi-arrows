@@ -47,6 +47,16 @@ val multi-vee : int -> float -> (|
   ext : float;
   line-width : float;
 |) -> t
+val hook-l : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
+val hook-r : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
 
 end = struct
 
@@ -102,5 +112,70 @@ let vee rec = of-path (fun body ctx -> (
 ))
 
 let multi-vee n p-f rec = duplicate true n p-f (vee rec)
+
+% curve from (r, -r) to (r, r) via (0, 0)
+% approximately a half circle
+let hook-path r =
+let t = r *' 0.55228 in         % cf. Gr.circle
+let rt = r -' t in
+let nr = Length.neg r in
+Path.start (r, nr)
+|> Path.bezier-to (rt, nr) (0pt, Length.neg t) (0pt, 0pt)
+|> Path.bezier-to (0pt, t) (rt, r) (r, r)
+|> terminate-path
+
+let hook-depth r y =
+let y-f = y /' 1pt in
+let r-f = r /' 1pt in
+let s = y-f /. r-f in
+let x-f = r-f *. (1.0 -. Float.sqrt (1.0 -. s *. s)) in
+1pt *' x-f
+
+let hook-l-path rec body ctx =
+let fs = Context.get-font-size ctx in
+let color = Context.get-text-color ctx in
+let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right -' body#end-left] in
+let d2 = fs *' rec#ext in
+let d = d1 +' d2 in
+let r = d *' 0.5 in
+let path = hook-path r in
+let center = body#end-right -' r in
+(|
+  metadata = (|
+    right = body#end-right;
+    left = body#end-right -' d;
+    length = d;
+    depth = fun y0 -> (
+      let y = y0 -' center in
+      if Length.(y > r) then r
+      else if Length.(y >= neg r) then hook-depth r y
+      else r
+    );
+  |);
+  path = path |> Path.shift (0pt, Length.neg center);
+  stroke = Graphics.stroke (fs *' rec#line-width) color;
+|)
+
+let hook-l rec = of-path (hook-l-path rec)
+
+let hook-r-path rec body ctx =
+let h1 = hook-l-path rec (|
+  body with
+  end-left = Length.neg body#end-right;
+  end-right = Length.neg body#end-left;
+|) ctx in
+let m1 = h1#metadata in
+(|
+  h1 with
+  metadata = (|
+    m1 with
+    left = Length.neg m1#right;
+    right = Length.neg m1#left;
+    depth = fun p -> (m1#depth (Length.neg p));
+  |);
+  path = linear-transform-path 1.0 0.0 0.0 (Float.neg 1.0) h1#path
+|)
+
+let hook-r rec = of-path (hook-r-path rec)
 
 end

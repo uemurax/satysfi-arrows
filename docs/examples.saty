@@ -130,6 +130,32 @@ document (|
       head-ext = 0.1;
     |)){R} B
   });
+  +math(${
+    A \xrightarrow!(Arrow.hook-l (|
+      line-width = 0.05;
+      head-size = 0.15;
+      head-ext = 0.07;
+      tail-size = 0.12;
+      tail-ext = 0.1;
+    |)){i} B
+  });
+  +math(${
+    A \draw!(Arrow.of-bth (|
+      body = ArrowBody.multi-solid  4 0.15 (|
+        width = 0.05;
+      |);
+      head = ArrowHead.vee (|
+        line-width = 0.05;
+        size = 0.15;
+        ext = 0.07;
+      |);
+      tail = ArrowTail.hook-r (|
+        line-width = 0.05;
+        size = 0.12;
+        ext = 0.1;
+      |);
+    |)) B
+  });
 >
 
 % Local Variables:
