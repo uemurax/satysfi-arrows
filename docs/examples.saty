@@ -18,38 +18,33 @@ document (|
   +math(${
     a \draw!(Arrow.solid (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
+      head-size = 0.2;
     |)) b
   });
   +math(${
     a \xrightarrow!(Arrow.solid (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
+      head-size = 0.2;
     |)){f} b
   });
   +math(${
     a \xrightarrow!(Arrow.solid (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
+      head-size = 0.2;
     |)){ccccccccccccc} b
   });
   +math(${
     a \xrightarrow!(Arrow.tail (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
-      tail-size = 0.15;
-      tail-ext = 0.07;
+      head-size = 0.2;
+      tail-size = 0.2;
     |)){ccccccccccccc} b
   });
   +math(${
     P \xrightarrow!(Arrow.multi-solid 17 0.15 (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.15;
+      head-size = 0.2;
+      head-ext = 0.2;
     |)){\text!{By Yoneda}} Q
   });
   +math(${
@@ -60,8 +55,7 @@ document (|
   +math(${
     X \xrightarrow!(Arrow.multi-head 2 0.15 (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
+      head-size = 0.2;
     |)){p} Y
   });
   +math(${
@@ -119,24 +113,20 @@ document (|
   +math(${
     A \xrightarrow!(Arrow.harpoon-l (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.1;
+      head-size = 0.2;
     |)){R} B
   });
   +math(${
     A \xrightarrow!(Arrow.harpoon-r (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.1;
+      head-size = 0.2;
     |)){R} B
   });
   +math(${
     A \xrightarrow!(Arrow.hook-l (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
-      tail-size = 0.12;
-      tail-ext = 0.1;
+      head-size = 0.2;
+      tail-size = 0.15;
     |)){i} B
   });
   +math(${
@@ -159,10 +149,8 @@ document (|
   +math(${
     A \ni x \xrightarrow!(Arrow.mapsto (|
       line-width = 0.05;
-      head-size = 0.15;
-      head-ext = 0.07;
-      tail-size = 0.15;
-      tail-ext = 0.07;
+      head-size = 0.2;
+      tail-size = 0.2;
     |)){g \circ f} y \in B
   });
   +math(${

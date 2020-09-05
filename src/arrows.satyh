@@ -36,7 +36,6 @@ val multi-line : int -> float -> (|
 val solid : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
 |) -> t
 val multi-solid : int -> float -> (|
   line-width : float;
@@ -46,7 +45,6 @@ val multi-solid : int -> float -> (|
 val dashed : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
   dash : (|
     fill : float;
     space : float;
@@ -56,45 +54,34 @@ val dashed : (|
 val tail : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
   tail-size : float;
-  tail-ext : float;
 |) -> t
 val multi-head : int -> float -> (|
   line-width : float;
   head-size : float;
-  head-ext : float;
 |) -> t
 val harpoon-l : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
 |) -> t
 val harpoon-r : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
 |) -> t
 val hook-l : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
   tail-size : float;
-  tail-ext : float;
 |) -> t
 val hook-r : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
   tail-size : float;
-  tail-ext : float;
 |) -> t
 val mapsto : (|
   line-width : float;
   head-size : float;
-  head-ext : float;
   tail-size : float;
-  tail-ext : float;
 |) -> t
 
 % if you need define an arrow directly...
@@ -182,7 +169,7 @@ let solid rec = of-bth (|
   tail = ArrowTail.none;
   head = ArrowHead.vee (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -207,7 +194,7 @@ let dashed rec = of-bth (|
   tail = ArrowTail.none;
   head = ArrowHead.vee (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -218,12 +205,12 @@ let tail rec = of-bth (|
   |);
   tail = ArrowTail.vee (|
     size = rec#tail-size;
-    ext = rec#tail-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
   head = ArrowHead.vee (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -235,7 +222,7 @@ let multi-head n d rec = of-bth (|
   tail = ArrowTail.none;
   head = ArrowHead.multi-vee n d (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -247,7 +234,7 @@ let harpoon-l rec = of-bth (|
   tail = ArrowTail.none;
   head = ArrowHead.harpoon-l (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -259,7 +246,7 @@ let harpoon-r rec = of-bth (|
   tail = ArrowTail.none;
   head = ArrowHead.harpoon-r (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -270,12 +257,12 @@ let hook-l rec = of-bth (|
   |);
   tail = ArrowTail.hook-l (|
     size = rec#tail-size;
-    ext = rec#tail-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
   head = ArrowHead.vee (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -286,12 +273,12 @@ let hook-r rec = of-bth (|
   |);
   tail = ArrowTail.hook-r (|
     size = rec#tail-size;
-    ext = rec#tail-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
   head = ArrowHead.vee (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
@@ -302,12 +289,12 @@ let mapsto rec = of-bth (|
   |);
   tail = ArrowTail.vdash (|
     size = rec#tail-size;
-    ext = rec#tail-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
   head = ArrowHead.vee (|
     size = rec#head-size;
-    ext = rec#head-ext;
+    ext = 0.;
     line-width = rec#line-width;
   |);
 |)
