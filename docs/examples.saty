@@ -116,6 +116,20 @@ document (|
       |);
     |)){f} Y
   });
+  +math(${
+    A \xrightarrow!(Arrow.harpoon-l (|
+      line-width = 0.05;
+      head-size = 0.15;
+      head-ext = 0.1;
+    |)){R} B
+  });
+  +math(${
+    A \xrightarrow!(Arrow.harpoon-r (|
+      line-width = 0.05;
+      head-size = 0.15;
+      head-ext = 0.1;
+    |)){R} B
+  });
 >
 
 % Local Variables:

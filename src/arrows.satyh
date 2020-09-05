@@ -66,6 +66,16 @@ val multi-head : int -> float -> (|
   head-size : float;
   head-ext : float;
 |) -> t
+val harpoon-l : (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+|) -> t
+val harpoon-r : (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
+|) -> t
 
 end = struct
 
@@ -170,6 +180,30 @@ let multi-head n d rec = of-bth (|
   |);
   tail = ArrowTail.none;
   head = ArrowHead.multi-vee n d (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let harpoon-l rec = of-bth (|
+  body = ArrowBody.solid (|
+    width = rec#line-width;
+  |);
+  tail = ArrowTail.none;
+  head = ArrowHead.harpoon-l (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let harpoon-r rec = of-bth (|
+  body = ArrowBody.solid (|
+    width = rec#line-width;
+  |);
+  tail = ArrowTail.none;
+  head = ArrowHead.harpoon-r (|
     size = rec#head-size;
     ext = rec#head-ext;
     line-width = rec#line-width;

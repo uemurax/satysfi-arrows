@@ -49,6 +49,16 @@ val triangle : (|
   ext : float;
   line-width : float;
 |) -> t
+val harpoon-l : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
+val harpoon-r : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
 
 % for internal usage
 val from-ht : ArrowHeadTail.t -> t
@@ -161,5 +171,51 @@ let triangle rec = of-path (fun body ctx -> (
     stroke = Graphics.stroke (fs *' rec#line-width) color;
   |)
 ))
+
+let harpoon-l-path rec body ctx =
+let fs = Context.get-font-size ctx in
+let color = Context.get-text-color ctx in
+let r = body#end-right in
+let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right -' body#end-left] in
+let d2 = fs *' rec#ext in
+let d = d1 +' d2 in
+let nd = Length.neg d in
+(|
+  metadata = (|
+    left = r -' d;
+    right = r;
+    length = d;
+    depth = fun p -> r -' p;
+  |);
+  path = (
+    Path.start (0pt, 0pt)
+    |> Path.line-to (nd, d)
+    |> Path.terminate
+    |> Path.shift (0pt, Length.neg r)
+  );
+  stroke = Graphics.stroke (fs *' rec#line-width) color;
+|)
+
+let harpoon-l rec = of-path (harpoon-l-path rec)
+
+let harpoon-r-path rec body ctx =
+let h1 = harpoon-l-path rec (|
+  body with
+  end-left = Length.neg body#end-right;
+  end-right = Length.neg body#end-left;
+|) ctx in
+let m1 = h1#metadata in
+(|
+  h1 with
+  metadata = (|
+    m1 with
+    left = Length.neg m1#left;
+    right = Length.neg m1#right;
+    depth = fun p -> m1#depth (Length.neg p);
+  |);
+  path = linear-transform-path 1.0 0.0 0.0 (Float.neg 1.0) h1#path;
+|)
+
+let harpoon-r rec = of-path (harpoon-r-path rec)
 
 end
