@@ -156,6 +156,15 @@ document (|
       |);
     |)) B
   });
+  +math(${
+    A \ni x \xrightarrow!(Arrow.mapsto (|
+      line-width = 0.05;
+      head-size = 0.15;
+      head-ext = 0.07;
+      tail-size = 0.15;
+      tail-ext = 0.07;
+    |)){g \circ f} y \in B
+  });
 >
 
 % Local Variables:

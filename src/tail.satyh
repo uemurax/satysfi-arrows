@@ -57,6 +57,11 @@ val hook-r : (|
   ext : float;
   line-width : float;
 |) -> t
+val vdash : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
 
 end = struct
 
@@ -177,5 +182,29 @@ let m1 = h1#metadata in
 |)
 
 let hook-r rec = of-path (hook-r-path rec)
+
+let vdash rec = of-path (fun body ctx -> (
+  let fs = Context.get-font-size ctx in
+  let color = Context.get-text-color ctx in
+  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
+  let d2 = fs *' rec#ext in
+  let d = d1 +' d2 in
+  let nd = Length.neg d in
+  let path = (
+    Path.start (0pt, d)
+    |> Path.line-to (0pt, nd)
+    |> Path.terminate
+  ) in
+  (|
+    metadata = (|
+      left = nd;
+      right = d;
+      length = 0pt;
+      depth = fun _ -> 0pt;
+    |);
+    path = path;
+    stroke = Graphics.stroke (fs *' rec#line-width) color;
+  |)
+))
 
 end
