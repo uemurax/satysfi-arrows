@@ -7,6 +7,7 @@
 @require: base/graphics
 
 @import: types
+@import: lib/point
 
 module ArrowHead : sig
 
@@ -28,7 +29,16 @@ val of-path : (arrow-body-metadata -> context -> (|
 |))-> t
 
 val none : t
+val union : t -> t -> t
+val shift : bool -> float -> t ->t
+val duplicate : bool -> int -> float -> t -> t
+
 val vee : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
+val multi-vee : int -> float -> (|
   size : float;
   ext : float;
   line-width : float;
@@ -53,6 +63,53 @@ let none _ _ = (|
   |);
   draw = fun _ -> [];
 |)
+
+let union head1 head2 ctx body =
+let h1 = head1 ctx body in
+let h2 = head2 ctx body in
+let m1 = h1#metadata in
+let m2 = h2#metadata in
+(|
+  metadata = (|
+    left = Length.min m1#left m2#left;
+    right = Length.max m1#right m2#right;
+    length = Length.max m1#length m2#length;
+    depth = fun p -> Length.max (m1#depth p) (m2#depth p);
+  |);
+  draw = fun a -> (
+    let gr-l1 = h1#draw a in
+    let gr-l2 = h2#draw a in
+    List.concat [gr-l1; gr-l2]
+  );
+|)
+
+let shift keep-depth p-f head body ctx =
+let h = head body ctx in
+let m = h#metadata in
+let p = Context.get-font-size ctx *' p-f in
+let np = Length.neg p in
+(|
+  metadata = (|
+    m with
+    length = m#length +' p;
+    depth = (
+      if keep-depth then m#depth
+      else fun q -> m#depth q +' p
+    );
+  |);
+  draw = fun a -> (
+    h#draw a
+    |> List.map (Graphics.shift Arrow-Point.(of-arg np a))
+  );
+|)
+
+let-rec duplicate keep-depth n p-f head =
+if n <= 0 then none
+else (
+  let h1 = duplicate keep-depth (n - 1) p-f head in
+  let h2 = shift keep-depth p-f h1 in
+  union head h2
+)
 
 let of-path f body ctx =
 let rec = f body ctx in
@@ -88,5 +145,7 @@ let vee rec = of-path (fun body ctx -> (
     stroke = Graphics.stroke (fs *' rec#line-width) color;
   |)
 ))
+
+let multi-vee n p-f rec = duplicate true n p-f (vee rec)
 
 end

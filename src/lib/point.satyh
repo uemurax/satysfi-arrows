@@ -9,6 +9,7 @@ val (+) : point -> point -> point
 val (-) : point -> point -> point
 val scale : point -> float -> point
 val of-ratio : length -> float * float -> point
+val of-arg : length -> float -> point
 
 end = struct
 
@@ -50,5 +51,7 @@ let x-f = x /' 1pt in
 let y-f = y /' 1pt in
 if Float.(is-zero x-f && is-zero y-f) then 0.
 else Float.atan2 y-f x-f
+
+let of-arg len a = of-ratio len Float.((cos a, sin a))
 
 end

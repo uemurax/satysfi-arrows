@@ -13,7 +13,7 @@ document (|
   author = {Taichi Uemura};
 |) '<
   +math(${
-    a \draw!(Arrow.line 0.05) b
+    a \draw!(Arrow.line (|width = 0.05|)) b
   });
   +math(${
     a \draw!(Arrow.solid (|
@@ -46,18 +46,23 @@ document (|
     |)){ccccccccccccc} b
   });
   +math(${
-    P \xrightarrow!(Arrow.multi-solid 17 (|
+    P \xrightarrow!(Arrow.multi-solid 17 0.15 (|
       line-width = 0.05;
       head-size = 0.15;
       head-ext = 0.15;
-      distance = 0.15;
     |)){\text!{By Yoneda}} Q
   });
   +math(${
-    a \draw?:!(0.25)?:!(0.75)!(Arrow.multi-line 2 (|
+    a \draw?*?:!(0.75)!(Arrow.multi-line 2 0.2 (|
       width = 0.08;
-      distance = 0.2;
     |)) b
+  });
+  +math(${
+    X \xrightarrow!(Arrow.multi-head 2 0.15 (|
+      line-width = 0.05;
+      head-size = 0.15;
+      head-ext = 0.07;
+    |)){p} Y
   });
 >
 

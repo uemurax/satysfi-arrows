@@ -28,22 +28,21 @@ val of-bth : (|
   head : ArrowHead.t;
 |) -> t
 
-val line : float                % width
--> t
-val multi-line : int -> (|
+val line : (|
   width : float;
-  distance : float;
+|) -> t
+val multi-line : int -> float -> (|
+  width : float;
 |) -> t
 val solid : (|
   line-width : float;
   head-size : float;
   head-ext : float;
 |) -> t
-val multi-solid : int -> (|
+val multi-solid : int -> float -> (|
   line-width : float;
   head-size : float;
   head-ext : float;
-  distance : float;
 |) -> t
 val tail : (|
   line-width : float;
@@ -51,6 +50,11 @@ val tail : (|
   head-ext : float;
   tail-size : float;
   tail-ext : float;
+|) -> t
+val multi-head : int -> float -> (|
+  line-width : float;
+  head-size : float;
+  head-ext : float;
 |) -> t
 
 end = struct
@@ -85,20 +89,22 @@ let hm = h#metadata in
   )
 |)
 
-let line w-f = of-bth (|
-  body = ArrowBody.line w-f;
+let line rec = of-bth (|
+  body = ArrowBody.line rec;
   tail = ArrowTail.none;
   head = ArrowHead.none;
 |)
 
-let multi-line n rec = of-bth (|
-  body = ArrowBody.multi-line n rec;
+let multi-line n d rec = of-bth (|
+  body = ArrowBody.multi-line n d rec;
   tail = ArrowTail.none;
   head = ArrowHead.none;
 |)
 
 let solid rec = of-bth (|
-  body = ArrowBody.line rec#line-width;
+  body = ArrowBody.line (|
+    width = rec#line-width;
+  |);
   tail = ArrowTail.none;
   head = ArrowHead.vee (|
     size = rec#head-size;
@@ -107,10 +113,9 @@ let solid rec = of-bth (|
   |);
 |)
 
-let multi-solid n rec = of-bth (|
-  body = ArrowBody.multi-line n (|
+let multi-solid n d rec = of-bth (|
+  body = ArrowBody.multi-line n d (|
     width = rec#line-width;
-    distance = rec#distance;
   |);
   tail = ArrowTail.none;
   head = ArrowHead.vee (|
@@ -121,13 +126,27 @@ let multi-solid n rec = of-bth (|
 |)
 
 let tail rec = of-bth (|
-  body = ArrowBody.line rec#line-width;
+  body = ArrowBody.line (|
+    width = rec#line-width;
+  |);
   tail = ArrowTail.vee (|
     size = rec#tail-size;
     ext = rec#tail-ext;
     line-width = rec#line-width;
   |);
   head = ArrowHead.vee (|
+    size = rec#head-size;
+    ext = rec#head-ext;
+    line-width = rec#line-width;
+  |);
+|)
+
+let multi-head n d rec = of-bth (|
+  body = ArrowBody.line (|
+    width = rec#line-width;
+  |);
+  tail = ArrowTail.none;
+  head = ArrowHead.multi-vee n d (|
     size = rec#head-size;
     ext = rec#head-ext;
     line-width = rec#line-width;

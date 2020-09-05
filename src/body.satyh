@@ -32,10 +32,11 @@ val union : t -> t -> t
 val shift : length -> t -> t
 val multiple : int -> float -> t -> t
 
-val line : float -> t
-val multi-line : int -> (|
+val line : (|
   width : float;
-  distance : float;
+|) -> t
+val multi-line : int -> float -> (|
+  width : float;
 |) -> t
 
 end = struct
@@ -127,7 +128,8 @@ let-rec aux acc p n = (
 ) in
 aux none (d *' Float.(0.5 *. of-int (n - 1))) n ctx
 
-let line w-f ctx =
+let line rec ctx =
+let w-f = rec#width in
 let width = Context.get-font-size ctx *' w-f in
 let color = Context.get-text-color ctx in
 (|
@@ -152,6 +154,6 @@ let color = Context.get-text-color ctx in
   );
 |)
 
-let multi-line n rec = multiple n rec#distance (line rec#width)
+let multi-line n d rec = multiple n d (line rec)
 
 end
