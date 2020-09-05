@@ -64,6 +64,23 @@ document (|
       head-ext = 0.07;
     |)){p} Y
   });
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = ArrowBody.multi-line 43 0.2 (|
+        width = 0.05;
+      |);
+      head = ArrowHead.multi-vee 57 0.15 (|
+        line-width = 0.05;
+        size = 0.15;
+        ext = 1.;
+      |);
+      tail = ArrowTail.multi-vee 79 0.15 (|
+        line-width = 0.05;
+        size = 0.15;
+        ext = 0.5;
+      |);
+    |)){hom} Y
+  });
 >
 
 % Local Variables:

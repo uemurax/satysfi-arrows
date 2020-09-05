@@ -8,6 +8,7 @@
 
 @import: types
 @import: lib/point
+@import: head-tail
 
 module ArrowHead : sig
 
@@ -44,64 +45,44 @@ val multi-vee : int -> float -> (|
   line-width : float;
 |) -> t
 
+% for internal usage
+val from-ht : ArrowHeadTail.t -> t
+val to-ht : t -> ArrowHeadTail.t
+
 end = struct
 
-type t = arrow-body-metadata -> context -> (|
-  metadata : arrow-head-metadata;
-  draw : float -> graphics list;
-|)
+type ht = ArrowHeadTail.t
+type t = ht
 
-let make f = f
-let read body rec ctx = rec body ctx
+let from-ht ht = ht
+let to-ht h = h
+let make = ArrowHeadTail.make
+let read = ArrowHeadTail.read
 
-let none _ _ = (|
-  metadata = (|
-    left = 0pt;
-    right = 0pt;
-    length = 0pt;
-    depth = fun _ -> 0pt;
-  |);
-  draw = fun _ -> [];
-|)
+let none = ArrowHeadTail.none
 
-let union head1 head2 ctx body =
-let h1 = head1 ctx body in
-let h2 = head2 ctx body in
-let m1 = h1#metadata in
-let m2 = h2#metadata in
-(|
-  metadata = (|
-    left = Length.min m1#left m2#left;
-    right = Length.max m1#right m2#right;
-    length = Length.max m1#length m2#length;
-    depth = fun p -> Length.max (m1#depth p) (m2#depth p);
-  |);
-  draw = fun a -> (
-    let gr-l1 = h1#draw a in
-    let gr-l2 = h2#draw a in
-    List.concat [gr-l1; gr-l2]
-  );
-|)
+let union = ArrowHeadTail.union
 
-let shift keep-depth p-f head body ctx =
-let h = head body ctx in
-let m = h#metadata in
-let p = Context.get-font-size ctx *' p-f in
-let np = Length.neg p in
-(|
-  metadata = (|
-    m with
-    length = m#length +' p;
-    depth = (
-      if keep-depth then m#depth
-      else fun q -> m#depth q +' p
+let shift keep-depth p-f head = make (fun body ctx -> (
+  let h = read body head ctx in
+  let m = h#metadata in
+  let p = Context.get-font-size ctx *' p-f in
+  let np = Length.neg p in
+  (|
+    metadata = (|
+      m with
+      length = m#length +' p;
+      depth = (
+        if keep-depth then m#depth
+        else fun q -> m#depth q +' p
+      );
+    |);
+    draw = fun a -> (
+      h#draw a
+      |> List.map (Graphics.shift Arrow-Point.(of-arg np a))
     );
-  |);
-  draw = fun a -> (
-    h#draw a
-    |> List.map (Graphics.shift Arrow-Point.(of-arg np a))
-  );
-|)
+  |)
+))
 
 let-rec duplicate keep-depth n p-f head =
 if n <= 0 then none
@@ -111,17 +92,18 @@ else (
   union head h2
 )
 
-let of-path f body ctx =
-let rec = f body ctx in
-(|
-  metadata = rec#metadata;
-  draw = fun a -> (
-    let dx = Float.cos a in
-    let dy = Float.sin a in
-    let path = linear-transform-path dx (Float.neg dy) dy dx rec#path in
-    [rec#stroke path]
-  );
-|)
+let of-path f = make (fun body ctx -> (
+  let rec = f body ctx in
+  (|
+    metadata = rec#metadata;
+    draw = fun a -> (
+      let dx = Float.cos a in
+      let dy = Float.sin a in
+      let path = linear-transform-path dx (Float.neg dy) dy dx rec#path in
+      [rec#stroke path]
+    );
+  |)
+))
 
 let vee rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in

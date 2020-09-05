@@ -1,0 +1,78 @@
+@require: base/length
+@require: base/list-ext
+@require: base/float
+
+@import: types
+
+module ArrowHeadTail : sig
+
+% Common structure for arrow head and tail
+
+type t
+
+val make : (arrow-body-metadata -> context -> (|
+  metadata : arrow-head-tail-metadata;
+  draw : float -> graphics list;
+|)) -> t
+val read : arrow-body-metadata -> t -> context -> (|
+  metadata : arrow-head-tail-metadata;
+  draw : float -> graphics list;
+|)
+
+val none : t
+val union : t -> t -> t
+val flip : t -> t
+
+end = struct
+
+type t = arrow-body-metadata -> context -> (|
+  metadata : arrow-head-tail-metadata;
+  draw : float -> graphics list;
+|)
+
+let make f = f
+let read body ht ctx = ht body ctx
+
+let none _ _ = (|
+  metadata = (|
+    left = 0pt;
+    right = 0pt;
+    length = 0pt;
+    depth = fun _ -> 0pt;
+  |);
+  draw = fun _ -> [];
+|)
+
+let union ht1 ht2 ctx body =
+let x1 = ht1 ctx body in
+let x2 = ht2 ctx body in
+let m1 = x1#metadata in
+let m2 = x2#metadata in
+(|
+  metadata = (|
+    left = Length.min m1#left m2#left;
+    right = Length.max m1#right m2#right;
+    length = Length.max m1#length m2#length;
+    depth = fun p -> Length.max (m1#depth p) (m2#depth p);
+  |);
+  draw = fun a -> (
+    let gr-l1 = x1#draw a in
+    let gr-l2 = x2#draw a in
+    List.concat [gr-l1; gr-l2]
+  );
+|)
+
+let flip head body ctx =
+let h = head body ctx in
+let md = h#metadata in
+(|
+  metadata = (|
+    md with
+    left = Length.neg md#right;
+    right = Length.neg md#left;
+    depth = fun p -> md#depth (Length.neg p);
+  |);
+  draw = fun a -> h#draw (a +. Float.pi);
+|)
+
+end

@@ -7,6 +7,8 @@
 @require: base/context
 
 @import: types
+@import: head-tail
+@import: head
 
 module ArrowTail : sig
 
@@ -27,8 +29,20 @@ val of-path : (arrow-body-metadata -> context -> (|
   stroke : path -> graphics;
 |)) -> t
 
+val to-head : t -> ArrowHead.t
+val from-head : ArrowHead.t -> t
+
 val none : t
+val union : t -> t -> t
+val shift : bool -> float -> t -> t
+val duplicate : bool -> int -> float -> t -> t
+
 val vee : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
+val multi-vee : int -> float -> (|
   size : float;
   ext : float;
   line-width : float;
@@ -36,40 +50,38 @@ val vee : (|
 
 end = struct
 
-type t = arrow-body-metadata -> context -> (|
-  metadata : arrow-tail-metadata;
-  draw : float -> graphics list;
-|)
+type ht = ArrowHeadTail.t
+type t = ht
 
-let make f = f
-let read body rec ctx = rec body ctx
+let make = ArrowHeadTail.make
+let read = ArrowHeadTail.read
 
-let none _ _ = (|
-  metadata = (|
-    left = 0pt;
-    right = 0pt;
-    length = 0pt;
-    depth = fun _ -> 0pt;
-  |);
-  draw = fun _ -> [];
-|)
+let none = ArrowHeadTail.none
+let union = ArrowHeadTail.union
 
-let of-path f body ctx =
-let rec = f body ctx in
-(|
-  metadata = rec#metadata;
-  draw = fun a -> (
-    let dx = Float.cos a in
-    let dy = Float.sin a in
-    let path = linear-transform-path dx (Float.neg dy) dy dx rec#path in
-    [rec#stroke path]
-  );
-|)
+let to-head t = ArrowHead.from-ht (ArrowHeadTail.flip t)
+let from-head h = ArrowHeadTail.flip (ArrowHead.to-ht h)
+
+let shift keep-depth p-f tail = from-head (ArrowHead.shift keep-depth p-f (to-head tail))
+let duplicate keep-depth n p-f tail = from-head (ArrowHead.duplicate keep-depth n p-f (to-head tail))
+
+let of-path f = make (fun body ctx -> (
+  let rec = f body ctx in
+  (|
+    metadata = rec#metadata;
+    draw = fun a -> (
+      let dx = Float.cos a in
+      let dy = Float.sin a in
+      let path = linear-transform-path dx (Float.neg dy) dy dx rec#path in
+      [rec#stroke path]
+    );
+  |)
+))
 
 let vee rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in
   let color = Context.get-text-color ctx in
-  let d1 = fs *' rec#size |> Length.max (body#end-right -' body#end-left) in
+  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
   let d2 = fs *' rec#ext in
   let d = d1 +' d2 in
   let nd = Length.neg d in
@@ -88,5 +100,7 @@ let vee rec = of-path (fun body ctx -> (
     stroke = Graphics.stroke (fs *' rec#line-width) color;
   |)
 ))
+
+let multi-vee n p-f rec = duplicate true n p-f (vee rec)
 
 end
