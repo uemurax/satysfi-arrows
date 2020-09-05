@@ -44,6 +44,11 @@ val multi-vee : int -> float -> (|
   ext : float;
   line-width : float;
 |) -> t
+val triangle : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
 
 % for internal usage
 val from-ht : ArrowHeadTail.t -> t
@@ -129,5 +134,32 @@ let vee rec = of-path (fun body ctx -> (
 ))
 
 let multi-vee n p-f rec = duplicate true n p-f (vee rec)
+
+let sqrt3 = Float.sqrt 3.
+
+let triangle rec = of-path (fun body ctx -> (
+  let fs = Context.get-font-size ctx in
+  let color = Context.get-text-color ctx in
+  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
+  let d2 = fs *' rec#ext in
+  let d = d1 +' d2 in
+  let nd = Length.neg d in
+  let h = d *' sqrt3 in
+  let nh = Length.neg h in
+  let path = (
+    List.fold-left (Fn.flip Path.line-to) (Path.start (0pt, 0pt)) [(nh, d); (nh, nd)]
+    |> Path.close-with-line
+  ) in
+  (|
+    metadata = (|
+      left = nd;
+      right = d;
+      length = h;
+      depth = fun _ -> h;
+    |);
+    path = path;
+    stroke = Graphics.stroke (fs *' rec#line-width) color;
+  |)
+))
 
 end

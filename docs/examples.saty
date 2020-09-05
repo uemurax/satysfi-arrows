@@ -103,6 +103,19 @@ document (|
       |)
     |)){\exists\!f} Y
   });
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = ArrowBody.multi-solid 2 0.2 (|
+        width = 0.05;
+      |);
+      tail = ArrowTail.none;
+      head = ArrowHead.triangle (|
+        line-width = 0.05;
+        size = 0.12;
+        ext = 0.07;
+      |);
+    |)){f} Y
+  });
 >
 
 % Local Variables:
