@@ -7,7 +7,7 @@ val ratio : point -> float * float
 val arg : point -> float
 val (+) : point -> point -> point
 val (-) : point -> point -> point
-val scale : point -> float -> point
+val scale : float -> point -> point
 val of-ratio : length -> float * float -> point
 val of-arg : length -> float -> point
 
@@ -18,7 +18,7 @@ let (+) = binop (+')
 let (-) = binop (-')
 
 let map f (x, y) = (f x, f y)
-let scale pt s = map (fun x -> x *' s) pt
+let scale s pt = map (fun x -> x *' s) pt
 
 let of-ratio l = map (fun x -> l *' x)
 

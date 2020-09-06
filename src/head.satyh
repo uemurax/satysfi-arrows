@@ -8,6 +8,7 @@
 
 @import: types
 @import: lib/point
+@import: lib/interval
 @import: head-tail
 
 module ArrowHead : sig
@@ -125,7 +126,7 @@ let of-path f = make (fun body ctx -> (
 let vee rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in
   let color = Context.get-text-color ctx in
-  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
+  let d1 = Length.max (fs *' rec#size) (Arrow-Interval.abs body#head) in
   let d2 = fs *' rec#ext in
   let d = d1 +' d2 in
   let nd = Length.neg d in
@@ -135,8 +136,7 @@ let vee rec = of-path (fun body ctx -> (
   ) in
   (|
     metadata = (|
-      left = nd;
-      right = d;
+      interval = Arrow-Interval.make nd d;
       length = d;
       depth = Length.abs;
     |);
@@ -152,7 +152,7 @@ let sqrt3 = Float.sqrt 3.
 let triangle rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in
   let color = Context.get-text-color ctx in
-  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
+  let d1 = Length.max (fs *' rec#size) (Arrow-Interval.abs body#head) in
   let d2 = fs *' rec#ext in
   let d = d1 +' d2 in
   let nd = Length.neg d in
@@ -164,8 +164,7 @@ let triangle rec = of-path (fun body ctx -> (
   ) in
   (|
     metadata = (|
-      left = nd;
-      right = d;
+      interval = Arrow-Interval.make nd d;
       length = h;
       depth = fun _ -> h;
     |);
@@ -177,15 +176,14 @@ let triangle rec = of-path (fun body ctx -> (
 let harpoon-l-path rec body ctx =
 let fs = Context.get-font-size ctx in
 let color = Context.get-text-color ctx in
-let r = body#end-right in
-let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right -' body#end-left] in
+let r = Arrow-Interval.right body#head in
+let d1 = Length.max (fs *' rec#size) (Arrow-Interval.width body#head) in
 let d2 = fs *' rec#ext in
 let d = d1 +' d2 in
 let nd = Length.neg d in
 (|
   metadata = (|
-    left = r -' d;
-    right = r;
+    interval = Arrow-Interval.make (r -' d) r;
     length = d;
     depth = fun p -> r -' p;
   |);
@@ -203,16 +201,14 @@ let harpoon-l rec = of-path (harpoon-l-path rec)
 let harpoon-r-path rec body ctx =
 let h1 = harpoon-l-path rec (|
   body with
-  end-left = Length.neg body#end-right;
-  end-right = Length.neg body#end-left;
+  head = Arrow-Interval.neg body#head;
 |) ctx in
 let m1 = h1#metadata in
 (|
   h1 with
   metadata = (|
     m1 with
-    left = Length.neg m1#left;
-    right = Length.neg m1#right;
+    interval = Arrow-Interval.neg m1#interval;
     depth = fun p -> m1#depth (Length.neg p);
   |);
   path = linear-transform-path 1.0 0.0 0.0 (Float.neg 1.0) h1#path;

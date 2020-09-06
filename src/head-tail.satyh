@@ -3,6 +3,7 @@
 @require: base/float
 
 @import: types
+@import: lib/interval
 
 module ArrowHeadTail : sig
 
@@ -35,8 +36,7 @@ let read body ht ctx = ht body ctx
 
 let none _ _ = (|
   metadata = (|
-    left = 0pt;
-    right = 0pt;
+    interval = Arrow-Interval.zero;
     length = 0pt;
     depth = fun _ -> 0pt;
   |);
@@ -50,8 +50,7 @@ let m1 = x1#metadata in
 let m2 = x2#metadata in
 (|
   metadata = (|
-    left = Length.min m1#left m2#left;
-    right = Length.max m1#right m2#right;
+    interval = Arrow-Interval.union m1#interval m2#interval;
     length = Length.max m1#length m2#length;
     depth = fun p -> Length.max (m1#depth p) (m2#depth p);
   |);
@@ -63,13 +62,17 @@ let m2 = x2#metadata in
 |)
 
 let flip head body ctx =
-let h = head body ctx in
+let h = head (|
+  body with
+  mid = Arrow-Interval.neg body#mid;
+  head = Arrow-Interval.neg body#tail;
+  tail = Arrow-Interval.neg body#head;
+|) ctx in
 let md = h#metadata in
 (|
   metadata = (|
     md with
-    left = Length.neg md#right;
-    right = Length.neg md#left;
+    interval = Arrow-Interval.neg md#interval;
     depth = fun p -> md#depth (Length.neg p);
   |);
   draw = fun a -> h#draw (a +. Float.pi);

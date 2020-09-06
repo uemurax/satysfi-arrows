@@ -5,6 +5,7 @@
 @require: base/option-ext
 
 @import: arrows
+@import: lib/interval
 
 module ArrowCommands : sig
 
@@ -28,8 +29,9 @@ let w0 = mb#length +' mh#length +' mt#length in
 let w = Length.max len w0 in
 let to = (w, pos) in
 let gr-l = rec#draw from to in
-let l = List.fold-right Length.min 0pt [mb#mid-left; mb#end-left; mh#left; mt#left] in
-let r = List.fold-right Length.max 0pt [mb#mid-right; mb#end-right; mh#right; mt#right] in
+let itv = List.fold-right Arrow-Interval.union mb#mid [mb#head; mb#tail; mh#interval; mt#interval] in
+let l = Arrow-Interval.left itv in
+let r = Arrow-Interval.right itv in
 let h = pos -' l in
 let d = r -' pos in
 Inline.of-graphics w h d (fun pt -> List.map (Graphics.shift pt) gr-l)
@@ -63,15 +65,26 @@ let (head-len, tail-len) = (
   ) else (mh#length, mt#length)
 ) in
 let w = body-len +' head-len +' tail-len in
-let from = (0pt, pos) in
-let to = (w, pos) in
+let from = (0pt, 0pt) in
+let to = (w, 0pt) in
 let arr-gr-l = rec#draw from to in
 let label-h = y1 -' y0 in
-let l = List.fold-right Length.min 0pt [(mb#mid-left -' label-h) -' label-pd; mb#end-left; mh#left; mt#left] in
-let r = List.fold-right Length.max 0pt [mb#mid-right; mb#end-right; mh#right; mt#right] in
+let i1 = Arrow-Interval.(add mb#mid (neg (make 0pt label-pd))) in
+let i0 = Arrow-Interval.(add i1 (neg (make 0pt label-h))) in
+let itv = (
+  List.fold-right
+  Arrow-Interval.union i0
+  [mb#head; mb#tail; mh#interval; mt#interval]
+) in
+let l = Arrow-Interval.left itv in
+let r = Arrow-Interval.right itv in
 let h = pos -' l in
 let d = r -' pos in
-let gr-l = arr-gr-l |> List.cons (Graphics.shift (tail-len +' body-len *' 0.5 -' (x0 +' x1) *' 0.5, (Length.neg mb#mid-left +' label-pd +' pos) -' y0) label-gr) in
+let gr-l = (
+  arr-gr-l
+  |> List.cons (Graphics.shift (tail-len +' body-len *' 0.5 -' (x0 +' x1) *' 0.5, Length.neg (Arrow-Interval.left i1) -' y0) label-gr)
+  |> List.map (Graphics.shift (0pt, pos))
+) in
 Inline.of-graphics w h d (fun pt -> List.map (Graphics.shift pt) gr-l)
 
 let arrow-scheme f ?:pos-f-o ?:len-f-o arr ?:label-pd-f-o label-m =
