@@ -212,6 +212,30 @@ document (|
       tail = ArrowTail.none;
     |)){P} Y
   });
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = ArrowBody.(
+        solid (|width = 0.05;|)
+        |> multiple 3 0.2
+      );
+      head = ArrowHead.(
+        vee (|
+          line-width = 0.05;
+          size = 0.15;
+          ext = 0.1;
+        |)
+        |> duplicate false 3 0.2
+      );
+      tail = ArrowTail.(
+        hook-l (|
+          line-width = 0.05;
+          size = 0.15;
+          ext = 0.1;
+        |)
+        |> duplicate true 3 0.2
+      );
+    |)){p} Y
+  });
 >
 
 % Local Variables:
