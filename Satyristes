@@ -15,9 +15,12 @@
  (version "1.0")
  (workingDirectory "docs")
  (build
-  ((satysfi "examples.saty" "-o" "examples.pdf" "-b" "--debug-show-bbox" "--debug-show-block-bbox")))
+  ((satysfi "examples.saty" "-o" "examples.pdf" "-b" "--debug-show-bbox" "--debug-show-block-bbox")
+   (satysfi "manual.saty" "-o" "manual.pdf" "-b")))
  (sources
-  ((doc "examples.pdf" "docs/examples.pdf")))
+  ((doc "examples.pdf" "docs/examples.pdf")
+   (doc "examples.saty" "docs/examples.saty")
+   (doc "manual.pdf" "docs/manual.pdf")))
  (opam "satysfi-arrows-doc.opam")
  (dependencies
   ((dist ())
