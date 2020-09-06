@@ -192,6 +192,60 @@ val vee : (|
       }
     >
     +section?:(`metadata`){Metadata}<
+      +p{
+        Global types `arrow-metadata`, `arrow-body-metadata`, `arrow-head-metadata` and `arrow-tail-metadata` are defined in the `arrow/types` package.
+      }
+      +code(```
+type arrow-metadata = (|
+  body : arrow-body-metadata;
+  head : arrow-head-metadata;
+  tail : arrow-tail-metadata;
+|)
+```);
+      +p{
+        Metadata of an arrow consists of metadata of an arrow body, an arrow head and an arrow tail.
+      }
+      +code(```
+type arrow-body-metadata = (|
+  mid : Arrow-Interval.t;
+  head : Arrow-Interval.t;
+  tail : Arrow-Interval.t;
+  length : length;
+|)
+```);
+      +p{
+        Metadata of an arrow body consist of the intervals of the middle, the head and the tail of the arrow body and the minimum length of the arrow body.
+        An interval is a pair ${\paren{l, r}} of lengths such that ${l \leq r}.
+        The value `mid` contains the coordinates of the left side and the right side of the middle of the arrow body facing to the arrow direction.
+        The values `head` and `tail` are simlar.
+      }
+      +code(```
+type arrow-head-tail-metadata = (|
+  interval : Arrow-Interval.t;
+  length : length;
+  depth : length -> length;
+|)
+type arrow-head-metadata = arrow-head-tail-metadata
+type arrow-tail-metadata = arrow-head-tail-metadata
+```);
+      +p{
+        Metadata of arrow heads and arrow tails are the same.
+        `interval` and `length` are similar to those of `arrow-body-metadata`.
+        The function `depth` tells an arrow body the depth of the arrow head or tail at a position facing to the arrow direction.
+        For example, the depth of the arrow head
+        \eqn(${
+          \draw!(Arrow.of-bth (|
+            body = ArrowBody.none;
+            tail = ArrowTail.none;
+            head = ArrowHead.vee (|
+              line-width = 0.05;
+              size = 0.5;
+              ext = 0.;
+            |);
+          |))
+        });%
+        at a position ${x} is ${\abs{x}}, so outer part of an arrow body will be shorter than the center of the arrow body.
+      }
     >
   >
   +chapter{Package reference}<
