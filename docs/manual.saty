@@ -1,4 +1,5 @@
 @require: stdjareport
+@require: pervasives
 
 @import: ../src/arrows
 @import: ../src/commands
@@ -373,6 +374,38 @@ val make : (arrow-body-metadata -> context -> (|
         Like the `ArrowBody` module, the `ArrowHead` module and the `ArrowTail` also provide raw constructors, but these interfaces might be changed in future development.
       }
     >
+  >
+  +chapter{Math commands}<
+    +p{
+      The `ArrowCommands` module in the `arrows/commands` package provides some math commands for drawing arrows.
+    }
+    +code(```
+val \draw : [float?; float?; Arrow.t] math-cmd
+```);
+    +p{
+      `\draw!(arr)` draws an arrow `arr`.
+      It accepts two optional arguments.
+      The first one is the y-coordinate in ratio to the font size, and the default value is `0.25`.
+      The second one is the length of the arrow in ratio to the font size
+      , and the default value is `1.0`.
+    }
+    +code(```
+val \xrightarrow : [float?; float?; Arrow.t; float?; math] math-cmd
+```);
+    +p{
+      `\xrightarrow!(arr){label}` draws an arrow `arr` with label `label`.
+      The arrow automatically extends when `label` is wide, like `\xrightarrow` of the `amsmath` \LaTeX; package.
+      It accepts three optional arguments.
+      The first one is the same as that of `\draw`.
+      The second one is similar to that of `\draw` and specifies the minimum length of the arrow.
+      The third one is the distance from the arrow to the label in ratio to the font size, and the default value is `0.2`.
+    }
+    +code(```
+val \xleftarrow : [float?; float?; Arrow.t; float?; math] math-cmd
+```);
+    +p{
+      Similar to `\xrightarrow`, but `\xleftarrow` draws an arrow from right to left.
+    }
   >
   +dummy{${a}}
 >
