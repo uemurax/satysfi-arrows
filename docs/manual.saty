@@ -21,6 +21,11 @@ let body3 = ArrowBody.(multiple 5 0.2 (solid (|
 |)))
 let head2 = ArrowHead.(duplicate true 3 0.2 head1)
 let head3 = ArrowHead.(duplicate false 3 0.2 head1)
+let tail1 = ArrowTail.(vee (|
+  line-width = line-width;
+  size = 0.2;
+  ext = 0.;
+|))
 
 let-block ctx +dummy it =
 let _ = read-inline ctx it in
@@ -262,6 +267,22 @@ Arrow.of-bth : (|
     +p{
       An arrow is usually built up out of an arrow body, an arrow tail and an arrow head by the function `Arrow.of-bth`.
     }
+    +code(```
+val invert : t -> t
+```);
+    +p{
+      The `Arrow` module provides some constructions of arrows.
+      `invert arr` constructs the arrow in the same style as `arr` but in the opposite direction.
+    }
+    +code(```
+val make : (context -> (|
+  metadata : arrow-metadata;
+  draw : point -> point -> graphics list;
+|)) -> t
+```);
+    +p{
+      There is also a raw constructor for arrows, but the interface might be changed in future development.
+    }
     +section{Defining arrow bodies}<
       +code(```
 val none : t
@@ -312,6 +333,30 @@ val duplicate : bool -> int -> float -> t -> t
         |))
         |});%
         The left arrow is built widh `duplicate true`, and the right arrow is built with `duplicate false`.
+      }
+      +code(```
+val to-head : t -> ArrowHead.t
+val from-head : ArrowHead.t -> t
+```);
+      +p{
+        The `ArrowTail` module provides head/tail converters.
+        Note that the graphics of an arrow head or tail is rotated 180 degrees by these converters:
+        if `tail` is the following arrow tail,
+        \eqn(${
+          \draw!(Arrow.of-bth (|
+            body = ArrowBody.none;
+            head = ArrowHead.none;
+            tail = tail1;
+          |))
+        });%
+        then `ArrowTail.to-head tail` is the following arrow head.
+        \eqn(${
+          \draw!(Arrow.of-bth (|
+            body = ArrowBody.none;
+            tail = ArrowTail.none;
+            head = ArrowTail.to-head tail1;
+          |))
+        });
       }
       +code(```
 val of-path : (arrow-body-metadata -> context -> (|
