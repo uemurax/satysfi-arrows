@@ -2,7 +2,7 @@
 
 (library
  (name "arrows")
- (version "1.0")
+ (version "1.0.0")
  (sources
   ((packageDir "src")))
  (opam "satysfi-arrows.opam")
@@ -12,7 +12,7 @@
 
 (libraryDoc
  (name "arrows-doc")
- (version "1.0")
+ (version "1.0.0")
  (workingDirectory "docs")
  (build
   ((satysfi "examples.saty" "-o" "examples.pdf" "-b" "--debug-show-bbox" "--debug-show-block-bbox")
