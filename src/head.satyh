@@ -102,12 +102,17 @@ let shift keep-depth p-f head = make (fun body ctx -> (
   |)
 ))
 
-let-rec duplicate keep-depth n p-f head =
+let duplicate keep-depth n p-f head =
 if n <= 0 then none
 else (
-  let h1 = duplicate keep-depth (n - 1) p-f head in
-  let h2 = shift keep-depth p-f h1 in
-  union head h2
+  let-rec aux acc n = (
+    if n <= 0 then acc
+    else (
+      let h1 = shift keep-depth p-f acc in
+      aux (union head h1) (n - 1)
+    )
+  ) in
+  aux head (n - 1)
 )
 
 let of-path f = make (fun body ctx -> (
