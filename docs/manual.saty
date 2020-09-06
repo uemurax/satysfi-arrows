@@ -27,6 +27,11 @@ let tail1 = ArrowTail.(vee (|
   size = 0.2;
   ext = 0.;
 |))
+let cross1 = ArrowBody.cross (|
+  line-width = line-width;
+  size = 0.2;
+  ext = 0.;
+|)
 
 let-block ctx +dummy it =
 let _ = read-inline ctx it in
@@ -294,6 +299,24 @@ val multiple : int -> float -> t -> t
       +p{
         The `ArrowBody` module provides basic constructions of arrow bodies.
         `multiple n s b` constructs the arrow body consisting of `n` copies of `b` with spacing `s`.
+      }
+      +code(```
+val cross : (|
+  line-width : float;
+  size : float;
+  ext : float;
+|) -> t -> t
+```);
+      +p{
+        `cross rec body` constructs the arrow body from `body` by adjoining a line orthogonal to the arrow direction.
+        \eqn(${
+          \draw!(Arrow.of-bth (|
+            body = cross1 body2;
+            head = head1;
+            tail = ArrowTail.none;
+          |))
+        });%
+        The interface of `cross` might be changed in futuer development (e.g. introducing a type of body decorators).
       }
       +code(```
 val make : (context -> (|
