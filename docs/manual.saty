@@ -66,7 +66,7 @@ val solid : (|
 ```);
       +p{
         For quick construction of arrows, the `Arrow` module provides some preconfigured arrows like `solid`, `dashed`, `tail`, `harpoon-l` and `mapsto`.
-        See Section \ref(`preconfigured-arrows`); for full details.
+        See the source `arrows/arrows` for full details.
       }
       +code(```
 val of-bth : (|
@@ -132,7 +132,7 @@ val solid : (|
 ```);
       +p{
         For quick construction of arrow bodies, the `ArrowBody` module provides some preconfigured arrow bodies like `solid` and `dashed`.
-        See Section \ref(`preconfigured-arrow-bodies`); for full details.
+        See the source `arrows/body` for full details.
       }
     >
     +section?:(`arrow-head`){The `ArrowHead` module}<
@@ -184,13 +184,14 @@ val vee : (|
 ```);
       +p{
         For quick construction of arrow heads, the `ArrowHead` module provides some preconfigured arrow heads like `vee`, `triangle` and `harpoon-l`.
-        See \ref(`preconfigured-arrow-heads`); for full details.
+        See the source `arrows/head` for full details.
       }
     >
     +section?:(`arrow-tail`){The `ArrowTail` module}<
       +p{
         The package `arrows/tail` provides the `ArrowTail` module.
         Arrow tails are essentially the same as arrow heads.
+        See the source `arrows/tail` for preconfigured arrow tails.
       }
     >
     +section?:(`metadata`){Metadata}<
@@ -205,7 +206,7 @@ type arrow-metadata = (|
 |)
 ```);
       +p{
-        Metadata of an arrow consists of metadata of an arrow body, an arrow head and an arrow tail.
+        Metadata of an arrow consist of metadata of an arrow body, an arrow head and an arrow tail.
       }
       +code(```
 type arrow-body-metadata = (|
@@ -326,20 +327,6 @@ val make : (arrow-body-metadata -> context -> (|
       +p{
         Like the `ArrowBody` module, the `ArrowHead` module and the `ArrowTail` also provide raw constructors, but these interfaces might be changed in future development.
       }
-    >
-  >
-  +chapter{Package reference}<
-    +section{The `Arrow` module}<
-      +subsection?:(`preconfigured-arrows`){Preconfigured arrows}<
-      >
-    >
-    +section{The `ArrowBody` module}<
-      +subsection?:(`preconfigured-arrow-bodies`){Preconfigured arrow bodies}<
-      >
-    >
-    +section{The `ArrowHead` module}<
-      +subsection?:(`preconfigured-arrow-heads`){Preconfigured arrow heads}<
-      >
     >
   >
   +dummy{${a}}
