@@ -18,6 +18,11 @@ val none : t
 val union : t -> t -> t
 val shift : length -> t -> t
 val multiple : int -> float -> t -> t
+val cross : (|
+  line-width : float;
+  size : float;
+  ext : float;
+|) -> t -> t
 
 % standard arrow bodies
 val line : (context -> (|head : length; tail : length|) -> path -> graphics) -> t
@@ -184,5 +189,39 @@ let stroke ctx ht = (
   Graphics.dashed-stroke width dash color
 ) in
 line stroke
+
+let cross rec body ctx =
+let b = body ctx in
+let bm = b#metadata in
+let fs = Context.get-font-size ctx in
+let color = Context.get-text-color ctx in
+let d1 = Length.max (fs *' rec#size) (Arrow-Interval.abs bm#mid) in
+let d2 = fs *' rec#ext in
+let d = d1 +' d2 in
+let lw = fs *' rec#line-width in
+(|
+  metadata = (|
+    bm with
+    mid = Arrow-Interval.make (Length.neg d) d;
+  |);
+  draw = fun ht from to -> (
+    let head = ht#head in
+    let tail = ht#tail in
+    let gr-l1 = b#draw ht from to in
+    let gr-l2 = (
+      let r = Arrow-Point.(ratio (to - from)) in
+      let c = Arrow-Point.(scale 0.5 ((from + of-ratio tail#length r) + (to - of-ratio head#length r))) in
+      let (x, y) = r in
+      let s = Arrow-Point.of-ratio d (Float.neg y, x) in
+      let c1 = Arrow-Point.(c + s) in
+      let c2 = Arrow-Point.(c - s) in
+      [Path.start c1
+       |> Path.line-to c2
+       |> Path.terminate
+       |> Graphics.stroke lw color]
+    ) in
+    List.concat [gr-l1; gr-l2]
+  );
+|)
 
 end

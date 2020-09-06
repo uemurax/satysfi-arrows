@@ -175,6 +175,43 @@ document (|
       |);
     |)){f}
   });
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = ArrowBody.(cross (|
+        line-width = 0.05;
+        size = 0.1;
+        ext = 0.05;
+      |) (solid (|
+        width = 0.05;
+      |)));
+      head = ArrowHead.vee (|
+        line-width = 0.05;
+        size = 0.15;
+        ext = 0.07;
+      |);
+      tail = ArrowTail.none;
+    |)){P} Y
+  });
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = ArrowBody.(
+        solid (|
+          width = 0.05;
+        |)
+        |> multiple 4 0.2
+        |> cross (|
+          line-width = 0.05;
+          size = 0.1;
+          ext = 0.1;
+        |));
+      head = ArrowHead.vee (|
+        line-width = 0.05;
+        size = 0.15;
+        ext = 0.07;
+      |);
+      tail = ArrowTail.none;
+    |)){P} Y
+  });
 >
 
 % Local Variables:
