@@ -1,5 +1,27 @@
 @require: stdjareport
 
+@import: ../src/arrows
+@import: ../src/commands
+
+let line-width = 0.05
+
+let body1 = ArrowBody.(multiple 3 0.2 (solid (|
+  width = line-width;
+|)))
+let head1 = ArrowHead.(vee (|
+  line-width = line-width;
+  size = 0.15;
+  ext = 0.1;
+|))
+
+let-block ctx +dummy it =
+let _ = read-inline ctx it in
+block-nil
+
+open ArrowCommands
+
+in
+
 document (|
   title = {Arrows manual};
   author = {Taichi Uemura};
@@ -52,6 +74,58 @@ val of-bth : (|
       }
     >
     +section?:(`arrow-body`){The `ArrowBody` module}<
+      +p{
+        The `arrows/body` package provides the `ArrowBody` module.
+      }
+      +code(```
+type t
+```);
+      +p{
+        This is the arrow body type.
+      }
+      +code(```
+val read : t -> context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)
+```);
+      +p{
+        The `read` function is a destructor for the type `t`.
+        The value `metadata` contains metadata like the interval and the minimum length of the arrow body.
+        See Section \ref(`metadata`); for details of the type `arrow-body-metadata`.
+        The `draw` function draws the arrow body, but it requires metadata of an arrow head and an arrow tail.
+        This is because the exact graphics of the body of an arrow depend on the head and the tail of the arrow.
+        For example, consider the following two arrows.
+        \math-list(${
+        | \draw!(Arrow.of-bth (|
+          body = body1;
+          head = ArrowHead.none;
+          tail = ArrowTail.none;
+        |))
+        | \draw!(Arrow.of-bth (|
+          body = body1;
+          head = head1;
+          tail = ArrowTail.none;
+        |))
+        |});%
+        Both arrows has the same arrow body (three lines).
+        The left arrow has the empty arrow head, and the right arrow has the arrow head which looks like “\>”.
+        The exact graphics of the arrow body are different in these arrows:
+        in the left arrow, all the lines have the same length\;
+        in the right arrow, the top and bottom lines are shorter than the middle line.
+      }
+      +code(```
+val solid : (|
+  width : float;
+|) -> t
+```);
+      +p{
+        For quick construction of arrow bodies, the `ArrowBody` module provides some preconfigured arrow bodies like `solid` and `dashed`.
+        See Section \ref(`preconfigured-arrow-bodies`); for full details.
+      }
     >
     +section?:(`arrow-head`){The `ArrowHead` module}<
     >
@@ -65,5 +139,10 @@ val of-bth : (|
       +subsection?:(`preconfigured-arrows`){Preconfigured arrows}<
       >
     >
+    +section{The `ArrowBody` module}<
+      +subsection?:(`preconfigured-arrow-bodies`){Preconfigured arrow bodies}<
+      >
+    >
   >
+  +dummy{${a}}
 >
