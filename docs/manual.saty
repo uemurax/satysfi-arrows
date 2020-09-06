@@ -1,5 +1,6 @@
 @require: stdjareport
 @require: pervasives
+@require: annot
 
 @import: ../src/arrows
 @import: ../src/commands
@@ -32,6 +33,34 @@ let cross1 = ArrowBody.cross (|
   size = 0.2;
   ext = 0.;
 |)
+let head4 = ArrowHead.(harpoon-l (|
+  line-width = line-width;
+  size = 0.1;
+  ext = 0.3;
+|))
+let body4 = ArrowBody.(dashed (|
+  width = line-width;
+  dash = (|
+    fill = 0.1;
+    space = 0.1;
+    shift = 0.;
+  |);
+|))
+let tail2 = ArrowTail.(hook-l (|
+  line-width = line-width;
+  size = 0.1;
+  ext = 0.2;
+|))
+let head5 = ArrowHead.(triangle (|
+  line-width = line-width;
+  size = 0.15;
+  ext = 0.07;
+|))
+let tail3 = ArrowTail.(vdash (|
+  line-width = line-width;
+  size = 0.1;
+  ext = 0.1;
+|))
 
 let-block ctx +dummy it =
 let _ = read-inline ctx it in
@@ -39,13 +68,48 @@ block-nil
 
 open ArrowCommands
 
+let-math \draw arr = ${\ArrowCommands.draw?:!(0.25)?:!(2.0)!(arr)}
+
 in
 
 document (|
   title = {Arrows manual};
   author = {Taichi Uemura};
 |) '<
-  +chapter{Basic usage}<
+  +chapter{Introduction}<
+    +p{
+      The `arrows` package is a \href(`https://github.com/gfngfn/SATySFi`){\SATySFi;} package that provides a variety of arrows.
+      It is intended to be used in packages for diagrams (like \href(`https://github.com/uemurax/satysfi-ncsq`){NCSq}) and for extensible arrows (see Section \ref(`math-commands`);).
+    }
+    +p{
+      An arrow consists of an arrow body, an arrow head, and an arrow tail.
+      Arrow bodies, heads, and tails are designed in such a way that they can be used in arbitrary combination, so a small number of arrow bodies, heads, and tails produce a wide variety of arrows.
+      Here are some examples of arrows drawn with this package.
+      \math-list(${
+      | \draw!(Arrow.of-bth (|
+        body = body2;
+        head = head1;
+        tail = ArrowTail.none;
+      |))
+      | \draw!(Arrow.of-bth (|
+        body = ArrowBody.(body4 |> multiple 3 0.2);
+        head = ArrowHead.(head4 |> duplicate true 2 0.2);
+        tail = tail2;
+      |))
+      | \draw!(Arrow.of-bth (|
+        body = ArrowBody.(body2 |> multiple 2 0.15 |> cross1);
+        head = head5;
+        tail = ArrowTail.(tail1 |> duplicate true 2 0.2);
+      |))
+      | \draw!(Arrow.of-bth (|
+        body = body2;
+        head = ArrowHead.(head4 |> duplicate true 3 0.2);
+        tail = ArrowTail.(tail3 |> duplicate false 2 0.15);
+      |))
+      |});
+    }
+  >
+  +chapter{Using arrows}<
     +section{The `Arrow` module}<
       +p{
         The `arrows/arrows` package provides the `Arrow` module .
@@ -398,7 +462,7 @@ val make : (arrow-body-metadata -> context -> (|
       }
     >
   >
-  +chapter{Math commands}<
+  +chapter?:(`math-commands`){Math commands}<
     +p{
       The `ArrowCommands` module in the `arrows/commands` package provides some math commands for drawing arrows.
     }
@@ -417,7 +481,7 @@ val \xrightarrow : [float?; float?; Arrow.t; float?; math] math-cmd
 ```);
     +p{
       `\xrightarrow!(arr){label}` draws an arrow `arr` with label `label`.
-      The arrow automatically extends when `label` is wide, like `\xrightarrow` of the `amsmath` \LaTeX; package.
+      The arrow automatically extends when `label` is wide, like `\xrightarrow` of the \href(`https://www.ctan.org/pkg/amsmath`){`amsmath`} \LaTeX; package.
       It accepts three optional arguments.
       The first one is the same as that of `\draw`.
       The second one is similar to that of `\draw` and specifies the minimum length of the arrow.
