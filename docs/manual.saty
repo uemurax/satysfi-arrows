@@ -13,6 +13,12 @@ let head1 = ArrowHead.(vee (|
   size = 0.15;
   ext = 0.1;
 |))
+let body2 = ArrowBody.(solid (|
+  width = line-width;
+|))
+let body3 = ArrowBody.(multiple 5 0.2 (solid (|
+  width = line-width;
+|)))
 
 let-block ctx +dummy it =
 let _ = read-inline ctx it in
@@ -111,7 +117,7 @@ val read : t -> context -> (|
           tail = ArrowTail.none;
         |))
         |});%
-        Both arrows has the same arrow body (three lines).
+        Both arrows have the same arrow body (three lines).
         The left arrow has the empty arrow head, and the right arrow has the arrow head which looks like “\>”.
         The exact graphics of the arrow body are different in these arrows:
         in the left arrow, all the lines have the same length\;
@@ -128,8 +134,62 @@ val solid : (|
       }
     >
     +section?:(`arrow-head`){The `ArrowHead` module}<
+      +p{
+        The `arrows/head` package provides the `ArrowHead` module.
+      }
+      +code(```
+type t
+```);
+      +p{
+        This is the arrow head type.
+      }
+      +code(```
+val read : arrow-body-metadata -> t -> context -> (|
+  metadata : arrow-head-metadata;
+  draw : float -> graphics list;
+|)
+```);
+      +p{
+        The `read` function is a destructor for the type `t`.
+        The value `metadata` contains metadata like the size of the arrow head.
+        See Section \ref(`metadata`); for details of the type `arrow-head-metadata`.
+        The `draw` function draws the arrow head at the origin `(0pt, 0pt)` towards the direction given by the first argument in radian.
+        The `read` function requires metadata of an arrow body.
+        This is because the arrow head in an arrow depends on the body of the arrow.
+        For example, consider the following two arrows.
+        \math-list(${
+        | \draw!(Arrow.of-bth (|
+          body = body2;
+          head = head1;
+          tail = ArrowTail.none;
+        |))
+        | \draw!(Arrow.of-bth (|
+          body = body3;
+          head = head1;
+          tail = ArrowTail.none;
+        |))
+        |});%
+        Both arrows have the same arrow head (looks like “\>”).
+        The left arrow has the single line arrow body, and the right arrow has the five lines arrow body.
+        In the right arrow, the arrow head is expanded to match the wide arrow body.
+      }
+      +code(```
+val vee : (|
+  size : float;
+  ext : float;
+  line-width : float;
+|) -> t
+```);
+      +p{
+        For quick construction of arrow heads, the `ArrowHead` module provides some preconfigured arrow heads like `vee`, `triangle` and `harpoon-l`.
+        See \ref(`preconfigured-arrow-heads`); for full details.
+      }
     >
     +section?:(`arrow-tail`){The `ArrowTail` module}<
+      +p{
+        The package `arrows/tail` provides the `ArrowTail` module.
+        Arrow tails are essentially the same as arrow heads.
+      }
     >
     +section?:(`metadata`){Metadata}<
     >
@@ -141,6 +201,10 @@ val solid : (|
     >
     +section{The `ArrowBody` module}<
       +subsection?:(`preconfigured-arrow-bodies`){Preconfigured arrow bodies}<
+      >
+    >
+    +section{The `ArrowHead` module}<
+      +subsection?:(`preconfigured-arrow-heads`){Preconfigured arrow heads}<
       >
     >
   >
