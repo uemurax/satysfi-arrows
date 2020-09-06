@@ -19,6 +19,8 @@ let body2 = ArrowBody.(solid (|
 let body3 = ArrowBody.(multiple 5 0.2 (solid (|
   width = line-width;
 |)))
+let head2 = ArrowHead.(duplicate true 3 0.2 head1)
+let head3 = ArrowHead.(duplicate false 3 0.2 head1)
 
 let-block ctx +dummy it =
 let _ = read-inline ctx it in
@@ -245,6 +247,84 @@ type arrow-tail-metadata = arrow-head-tail-metadata
           |))
         });%
         at a position ${x} is ${\abs{x}}, so outer part of an arrow body will be shorter than the center of the arrow body.
+      }
+    >
+  >
+  +chapter{Defining arrows}<
+    +code(```
+Arrow.of-bth : (|
+  body : ArrowBody.t;
+  tail : ArrowTail.t;
+  head : ArrowHead.t;
+|) -> t
+```);
+    +p{
+      An arrow is usually built up out of an arrow body, an arrow tail and an arrow head by the function `Arrow.of-bth`.
+    }
+    +section{Defining arrow bodies}<
+      +code(```
+val none : t
+val union : t -> t -> t
+val shift : length -> t -> t
+val multiple : int -> float -> t -> t
+```);
+      +p{
+        The `ArrowBody` module provides basic constructions of arrow bodies.
+        `multiple n s b` constructs the arrow body consisting of `n` copies of `b` with spacing `s`.
+      }
+      +code(```
+val make : (context -> (|
+  metadata : arrow-body-metadata;
+  draw : (|
+    head : arrow-head-metadata;
+    tail : arrow-tail-metadata;
+  |) -> point -> point -> graphics list;
+|)) -> t
+```);
+      +p{
+        For more complex arrow bodies not realized by basic constructions, the `ArrowBody` module provides a constructor for arrow bodies.
+        However, the interface of `make` might be changed in future development.
+      }
+    >
+    +section{Defining arrow heads and tails}<
+      +code(```
+val none : t
+val union : t -> t -> t
+val shift : bool -> float -> t -> t
+val duplicate : bool -> int -> float -> t -> t
+```);
+      +p{
+        Both the `ArrowHead` module and the `ArrowTail` module provide basic constructions of arrow heads and arrow tails, respectively.
+        `duplicate b n s h` constructs the arrow head consisting of `n` copies of `h` with shift `s`.
+        The boolean value `b` affects the depth of the arrow head constructed.
+        Compare the following.
+        \math-list(${
+        | \draw!(Arrow.of-bth (|
+          body = body1;
+          head = head2;
+          tail = ArrowTail.none;
+        |))
+        | \draw!(Arrow.of-bth (|
+          body = body1;
+          head = head3;
+          tail = ArrowTail.none;
+        |))
+        |});%
+        The left arrow is built widh `duplicate true`, and the right arrow is built with `duplicate false`.
+      }
+      +code(```
+val of-path : (arrow-body-metadata -> context -> (|
+  metadata : arrow-head-metadata;
+  path : path;
+  stroke : path -> graphics;
+|))-> t
+val make : (arrow-body-metadata -> context -> (|
+  metadata : arrow-head-metadata;
+  draw : float -> graphics list;
+|)) -> t
+```);
+      +p{
+        Like the `ArrowBody` module, the `ArrowHead` module and the `ArrowTail` also provide raw constructors, but these interfaces might be changed in future development.
       }
     >
   >
