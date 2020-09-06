@@ -1,13 +1,13 @@
+@import: lib/interval
+
 type arrow-body-metadata = (|
-  mid-left : length;
-  mid-right : length;
-  end-left : length;
-  end-right : length;
+  mid : Arrow-Interval.t;
+  head : Arrow-Interval.t;
+  tail : Arrow-Interval.t;
   length : length;
 |)
 type arrow-head-tail-metadata = (|
-  left : length;
-  right : length;
+  interval : Arrow-Interval.t;
   length : length;
   depth : length -> length;
 |)

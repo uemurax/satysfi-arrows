@@ -7,6 +7,7 @@
 
 @import: types
 @import: lib/point
+@import: lib/interval
 
 module ArrowBody : sig
 
@@ -66,10 +67,9 @@ let read body ctx = body ctx
 
 let none _ = (|
   metadata = (|
-    mid-left = 0pt;
-    mid-right = 0pt;
-    end-left = 0pt;
-    end-right = 0pt;
+    mid = Arrow-Interval.zero;
+    head = Arrow-Interval.zero;
+    tail = Arrow-Interval.zero;
     length = 0pt;
   |);
   draw = fun _ _ _ -> [];
@@ -82,10 +82,9 @@ let m1 = b1#metadata in
 let m2 = b2#metadata in
 (|
   metadata = (|
-    mid-left = Length.min m1#mid-left m2#mid-left;
-    mid-right = Length.max m1#mid-right m2#mid-right;
-    end-left = Length.min m1#end-left m2#end-left;
-    end-right = Length.max m1#end-right m2#end-right;
+    mid = Arrow-Interval.union m1#mid m2#mid;
+    head = Arrow-Interval.union m1#head m2#head;
+    tail = Arrow-Interval.union m1#tail m2#tail;
     length = Length.max m1#length m2#length;
   |);
   draw = fun rec from to -> (
@@ -101,10 +100,9 @@ let m = b#metadata in
 (|
   metadata = (|
     m with
-    mid-left = m#mid-left +' p;
-    mid-right = m#mid-right +' p;
-    end-left = m#end-left +' p;
-    end-right = m#end-right +' p;
+    mid = Arrow-Interval.shift p m#mid;
+    head = Arrow-Interval.shift p m#head;
+    tail = Arrow-Interval.shift p m#tail;
   |);
   draw = fun rec from to -> (
     let (x, y) = Arrow-Point.(ratio (to - from)) in
@@ -127,7 +125,7 @@ let m = b#metadata in
 let multiple n pd body ctx =
 let b = body ctx in
 let m = b#metadata in
-let w = Length.(max m#mid-right m#end-right -' min m#mid-left m#end-left) in
+let w = Arrow-Interval.(width (union m#mid (union m#head m#tail))) in
 let d = w +' get-font-size ctx *' pd in
 let-rec aux acc p n = (
   if n <= 0 then acc
@@ -143,10 +141,9 @@ aux none (d *' Float.(0.5 *. of-int (n - 1))) n ctx
 let line stroke ctx =
 (|
   metadata = (|
-    mid-left = 0pt;
-    mid-right = 0pt;
-    end-left = 0pt;
-    end-right = 0pt;
+    mid = Arrow-Interval.zero;
+    head = Arrow-Interval.zero;
+    tail = Arrow-Interval.zero;
     length = 0pt;
   |);
   draw = fun rec from to -> (

@@ -1,0 +1,61 @@
+@require: base/length
+
+module Arrow-Interval : sig
+
+% An interval is a pair (x, y) of lengths, but x <= y is ensured.
+type t
+
+val make : length -> length -> t
+val left : t -> length
+val right : t -> length
+
+val zero : t
+val union : t -> t -> t
+val add : t -> t -> t
+val shift : length -> t -> t
+val neg : t -> t
+
+val width : t -> length
+val abs : t -> length
+
+end = struct
+
+type t = (|
+  left : length;
+  right : length;
+|)
+
+let make x y = (|
+  left = Length.min x y;
+  right = Length.max x y;
+|)
+
+let left rec = rec#left
+let right rec = rec#right
+
+let zero = make 0pt 0pt
+
+let union i1 i2 = (|
+  left = Length.min i1#left i2#left;
+  right = Length.max i1#right i2#right;
+|)
+
+let add i1 i2 = (|
+  left = i1#left +' i2#left;
+  right = i1#right +' i2#right;
+|)
+
+let shift p i = (|
+  left = i#left +' p;
+  right = i#right +' p;
+|)
+
+let neg i = (|
+  left = Length.neg i#right;
+  right = Length.neg i#left;
+|)
+
+let width i = i#right -' i#left
+let abs i = Length.(max (abs i#left) (abs i#right))
+
+end

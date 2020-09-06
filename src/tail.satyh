@@ -9,6 +9,7 @@
 @import: types
 @import: head-tail
 @import: head
+@import: lib/interval
 
 module ArrowTail : sig
 
@@ -99,7 +100,7 @@ let of-path f = make (fun body ctx -> (
 let vee rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in
   let color = Context.get-text-color ctx in
-  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
+  let d1 = Length.max (fs *' rec#size) (Arrow-Interval.abs body#tail) in
   let d2 = fs *' rec#ext in
   let d = d1 +' d2 in
   let nd = Length.neg d in
@@ -109,8 +110,7 @@ let vee rec = of-path (fun body ctx -> (
   ) in
   (|
     metadata = (|
-      left = nd;
-      right = d;
+      interval = Arrow-Interval.make nd d;
       length = d;
       depth = fun x -> d -' (Length.abs x);
     |);
@@ -142,16 +142,16 @@ let x-f = r-f *. (1.0 -. Float.sqrt (1.0 -. s *. s)) in
 let hook-l-path rec body ctx =
 let fs = Context.get-font-size ctx in
 let color = Context.get-text-color ctx in
-let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right -' body#end-left] in
+let d1 = Length.max (fs *' rec#size) (Arrow-Interval.width body#tail) in
 let d2 = fs *' rec#ext in
 let d = d1 +' d2 in
 let r = d *' 0.5 in
 let path = hook-path r in
-let center = body#end-right -' r in
+let br = Arrow-Interval.right body#tail in
+let center = br -' r in
 (|
   metadata = (|
-    right = body#end-right;
-    left = body#end-right -' d;
+    interval = Arrow-Interval.make (br -' d) br;
     length = d;
     depth = fun y0 -> (
       let y = y0 -' center in
@@ -169,16 +169,14 @@ let hook-l rec = of-path (hook-l-path rec)
 let hook-r-path rec body ctx =
 let h1 = hook-l-path rec (|
   body with
-  end-left = Length.neg body#end-right;
-  end-right = Length.neg body#end-left;
+  tail = Arrow-Interval.neg body#tail;
 |) ctx in
 let m1 = h1#metadata in
 (|
   h1 with
   metadata = (|
     m1 with
-    left = Length.neg m1#right;
-    right = Length.neg m1#left;
+    interval = Arrow-Interval.neg m1#interval;
     depth = fun p -> (m1#depth (Length.neg p));
   |);
   path = linear-transform-path 1.0 0.0 0.0 (Float.neg 1.0) h1#path
@@ -189,7 +187,7 @@ let hook-r rec = of-path (hook-r-path rec)
 let vdash rec = of-path (fun body ctx -> (
   let fs = Context.get-font-size ctx in
   let color = Context.get-text-color ctx in
-  let d1 = List.fold-right Length.max 0pt [fs *' rec#size; body#end-right; Length.neg body#end-left] in
+  let d1 = Length.max (fs *' rec#size) (Arrow-Interval.abs body#tail) in
   let d2 = fs *' rec#ext in
   let d = d1 +' d2 in
   let nd = Length.neg d in
@@ -200,8 +198,7 @@ let vdash rec = of-path (fun body ctx -> (
   ) in
   (|
     metadata = (|
-      left = nd;
-      right = d;
+      interval = Arrow-Interval.make nd d;
       length = 0pt;
       depth = fun _ -> 0pt;
     |);
