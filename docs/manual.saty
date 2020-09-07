@@ -357,6 +357,7 @@ val make : (context -> (|
       +code(```
 val none : t
 val union : t -> t -> t
+val shift : float -> t -> t
 val multiple : int -> float -> t -> t
 ```);
       +p{

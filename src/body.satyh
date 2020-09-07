@@ -16,6 +16,7 @@ type t
 % arrow body transformers
 val none : t
 val union : t -> t -> t
+val shift : float -> t -> t
 val multiple : int -> float -> t -> t
 val cross : (|
   line-width : float;
@@ -126,6 +127,11 @@ let m = b#metadata in
     b#draw (|head = head1; tail = tail1|) z w
   )
 |)
+
+let shift p-f body ctx =
+let b = body ctx in
+let p = Context.get-font-size ctx *' p-f in
+shift-1 p b
 
 let multiple n pd body ctx =
 let b = body ctx in

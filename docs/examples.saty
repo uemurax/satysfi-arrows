@@ -236,6 +236,20 @@ document (|
       );
     |)){p} Y
   });
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = ArrowBody.(
+        solid (|width = 0.05;|)
+        |> shift 0.2
+      );
+      head = ArrowHead.(vee (|
+        line-width = 0.05;
+        size = 0.15;
+        ext = 0.1;
+      |));
+      tail = ArrowTail.none;
+    |)){f} Y
+  });
 >
 
 % Local Variables:
