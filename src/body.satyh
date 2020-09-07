@@ -16,7 +16,6 @@ type t
 % arrow body transformers
 val none : t
 val union : t -> t -> t
-val shift : length -> t -> t
 val multiple : int -> float -> t -> t
 val cross : (|
   line-width : float;
@@ -70,7 +69,7 @@ type t = context -> (|
 let make f = f
 let read body ctx = body ctx
 
-let none _ = (|
+let none-1 = (|
   metadata = (|
     mid = Arrow-Interval.zero;
     head = Arrow-Interval.zero;
@@ -80,9 +79,9 @@ let none _ = (|
   draw = fun _ _ _ -> [];
 |)
 
-let union body1 body2 ctx =
-let b1 = body1 ctx in
-let b2 = body2 ctx in
+let none _ = none-1
+
+let union-1 b1 b2 =
 let m1 = b1#metadata in
 let m2 = b2#metadata in
 (|
@@ -99,8 +98,9 @@ let m2 = b2#metadata in
   );
 |)
 
-let shift p body ctx =
-let b = body ctx in
+let union body1 body2 ctx = union-1 (body1 ctx) (body2 ctx)
+
+let shift-1 p b =
 let m = b#metadata in
 (|
   metadata = (|
@@ -135,13 +135,13 @@ let d = w +' get-font-size ctx *' pd in
 let-rec aux acc p n = (
   if n <= 0 then acc
   else (
-    let b1 = shift p body in
+    let b1 = shift-1 p b in
     let p1 = p -' d in
-    let acc1 = union b1 acc in
+    let acc1 = union-1 b1 acc in
     aux acc1 p1 (n - 1)
   )
 ) in
-aux none (d *' Float.(0.5 *. of-int (n - 1))) n ctx
+aux none-1 (d *' Float.(0.5 *. of-int (n - 1))) n
 
 let line stroke ctx =
 (|
