@@ -69,6 +69,10 @@ block-nil
 open ArrowCommands
 
 let-math \draw arr = ${\ArrowCommands.draw?:!(0.25)?:!(2.0)!(arr)}
+let-inline ctx \url s =
+let it = embed-string s in
+read-inline StdJaReport.(set-latin-font font-latin-mono ctx)
+{\href(s){#it;}}
 
 in
 
@@ -79,7 +83,7 @@ document (|
   +chapter{Introduction}<
     +p{
       The `arrows` package is a \href(`https://github.com/gfngfn/SATySFi`){\SATySFi;} package that provides a variety of arrows.
-      It is intended to be used in packages for diagrams (like \href(`https://github.com/uemurax/satysfi-ncsq`){NCSq}) and for extensible arrows (see Section \ref(`math-commands`);).
+      It is intended to be used in packages for diagrams (like NCSq\footnote{\url(`https://github.com/uemurax/satysfi-ncsq`);}) and for extensible arrows (see Section \ref(`math-commands`);).
     }
     +p{
       An arrow consists of an arrow body, an arrow head, and an arrow tail.
@@ -503,7 +507,7 @@ val \xrightarrow : [float?; float?; Arrow.t; float?; math] math-cmd
 ```);
     +p{
       `\xrightarrow!(arr){label}` draws an arrow `arr` with label `label`.
-      The arrow automatically extends when `label` is wide, like `\xrightarrow` of the \href(`https://www.ctan.org/pkg/amsmath`){`amsmath`} \LaTeX; package.
+      The arrow automatically extends when `label` is wide, like `\xrightarrow` of the amsmath \LaTeX; package\footnote{\url(`https://www.ctan.org/pkg/amsmath`);}.
       It accepts three optional arguments.
       The first one is the same as that of `\draw`.
       The second one is similar to that of `\draw` and specifies the minimum length of the arrow.
