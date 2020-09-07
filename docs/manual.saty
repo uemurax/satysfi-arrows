@@ -473,11 +473,6 @@ val from-head : ArrowHead.t -> t
         });
       }
       +code(```
-val of-path : (arrow-body-metadata -> context -> (|
-  metadata : arrow-head-metadata;
-  path : path;
-  stroke : path -> graphics;
-|))-> t
 val make : (arrow-body-metadata -> context -> (|
   metadata : arrow-head-metadata;
   draw : float -> graphics list;
