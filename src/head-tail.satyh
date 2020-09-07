@@ -4,6 +4,7 @@
 
 @import: types
 @import: lib/interval
+@import: metadata
 
 module ArrowHeadTail : sig
 
@@ -24,15 +25,39 @@ val none : t
 val union : t -> t -> t
 val flip : t -> t
 
-end = struct
-
-type t = arrow-body-metadata -> context -> (|
-  metadata : arrow-head-tail-metadata;
+% for internal usage
+val make-i : (arrow-body-metadata-i -> context -> (|
+  metadata : arrow-head-tail-metadata-i;
+  draw : float -> graphics list;
+|)) -> t
+val read-i : arrow-body-metadata-i -> t -> context -> (|
+  metadata : arrow-head-tail-metadata-i;
   draw : float -> graphics list;
 |)
 
-let make f = f
-let read body ht ctx = ht body ctx
+end = struct
+
+type t = arrow-body-metadata-i -> context -> (|
+  metadata : arrow-head-tail-metadata-i;
+  draw : float -> graphics list;
+|)
+
+let make f body ctx =
+let ht = f (Arrow-Metadata.body-from-i body) ctx in
+(|
+  metadata = Arrow-Metadata.ht-to-i ht#metadata;
+  draw = ht#draw;
+|)
+
+let read body ht ctx =
+let hti = ht (Arrow-Metadata.body-to-i body) ctx in
+(|
+  metadata = Arrow-Metadata.ht-from-i hti#metadata;
+  draw = hti#draw;
+|)
+
+let make-i f = f
+let read-i body ht = ht body
 
 let none _ _ = (|
   metadata = (|

@@ -5,7 +5,6 @@
 @require: base/option-ext
 
 @import: arrows
-@import: lib/interval
 
 module ArrowCommands : sig
 
@@ -21,17 +20,13 @@ let pos = fs *' pos-f in
 let len = fs *' len-f in
 let rec = Arrow.read arr ctx in
 let md = rec#metadata in
-let mb = md#body in
-let mt = md#tail in
-let mh = md#head in
 let from = (0pt, pos) in
-let w0 = mb#length +' mh#length +' mt#length in
+let w0 = md#body#length +' md#head#length +' md#tail#length in
 let w = Length.max len w0 in
 let to = (w, pos) in
 let gr-l = rec#draw from to in
-let itv = List.fold-right Arrow-Interval.union mb#mid [mb#head; mb#tail; mh#interval; mt#interval] in
-let l = Arrow-Interval.left itv in
-let r = Arrow-Interval.right itv in
+let l = List.fold-right Length.min md#body#left [md#head#left; md#tail#left] in
+let r = List.fold-right Length.max md#body#right [md#head#right; md#tail#right] in
 let h = pos -' l in
 let d = r -' pos in
 Inline.of-graphics w h d (fun pt -> List.map (Graphics.shift pt) gr-l)
@@ -51,38 +46,31 @@ let label-pd = fs *' label-pd-f in
 let label-gr = embed-math (label-ctx ctx) label-m |> Graphics.of-inline (0pt, 0pt) in
 let rec = Arrow.read arr ctx in
 let md = rec#metadata in
-let mb = md#body in
-let mh = md#head in
-let mt = md#tail in
 let ((x0, y0), (x1, y1)) = Graphics.bbox label-gr in
-let body-len = Length.max (x1 -' x0) mb#length in
+let body-len = Length.max (x1 -' x0) md#body#length in
 let (head-len, tail-len) = (
-  let len0 = body-len +' mh#length +' mt#length in
+  let len0 = body-len +' md#head#length +' md#tail#length in
   if Length.(len0 < len)
   then (
     let d = (len -' len0) *' 0.5 in
-    (mh#length +' d, mt#length +' d)
-  ) else (mh#length, mt#length)
+    (md#head#length +' d, md#tail#length +' d)
+  ) else (md#head#length, md#tail#length)
 ) in
 let w = body-len +' head-len +' tail-len in
 let from = (0pt, 0pt) in
 let to = (w, 0pt) in
 let arr-gr-l = rec#draw from to in
 let label-h = y1 -' y0 in
-let i1 = Arrow-Interval.(add mb#mid (neg (make 0pt label-pd))) in
-let i0 = Arrow-Interval.(add i1 (neg (make 0pt label-h))) in
-let itv = (
-  List.fold-right
-  Arrow-Interval.union i0
-  [mb#head; mb#tail; mh#interval; mt#interval]
-) in
-let l = Arrow-Interval.left itv in
-let r = Arrow-Interval.right itv in
+let l1 = md#body#left -' label-pd in
+let h1 = Length.neg l1 in
+let l0 = l1 -' label-h in
+let l = List.fold-right Length.min l0 [md#head#left; md#tail#left] in
+let r = List.fold-right Length.max md#body#right [md#head#right; md#tail#right] in
 let h = pos -' l in
 let d = r -' pos in
 let gr-l = (
   arr-gr-l
-  |> List.cons (Graphics.shift (tail-len +' body-len *' 0.5 -' (x0 +' x1) *' 0.5, Length.neg (Arrow-Interval.left i1) -' y0) label-gr)
+  |> List.cons (Graphics.shift (tail-len +' body-len *' 0.5 -' (x0 +' x1) *' 0.5, h1 -' y0) label-gr)
   |> List.map (Graphics.shift (0pt, pos))
 ) in
 Inline.of-graphics w h d (fun pt -> List.map (Graphics.shift pt) gr-l)

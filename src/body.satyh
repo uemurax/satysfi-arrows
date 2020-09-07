@@ -8,6 +8,7 @@
 @import: types
 @import: lib/point
 @import: lib/interval
+@import: metadata
 
 module ArrowBody : sig
 
@@ -57,18 +58,52 @@ val read : t -> context -> (|
   |) -> point -> point -> graphics list;
 |)
 
-end = struct
-
-type t = context -> (|
-  metadata : arrow-body-metadata;
+% for internal usage
+val read-i : t -> context -> (|
+  metadata : arrow-body-metadata-i;
   draw : (|
-    head : arrow-head-metadata;
-    tail : arrow-tail-metadata;
+    head : arrow-head-metadata-i;
+    tail : arrow-tail-metadata-i;
   |) -> point -> point -> graphics list;
 |)
 
-let make f = f
-let read body ctx = body ctx
+end = struct
+
+type t = context -> (|
+  metadata : arrow-body-metadata-i;
+  draw : (|
+    head : arrow-head-metadata-i;
+    tail : arrow-tail-metadata-i;
+  |) -> point -> point -> graphics list;
+|)
+
+let make f ctx =
+let b = f ctx in
+(|
+  metadata = Arrow-Metadata.body-to-i b#metadata;
+  draw = fun ht -> (
+    let ht1 = (|
+      head = Arrow-Metadata.ht-from-i ht#head;
+      tail = Arrow-Metadata.ht-from-i ht#tail;
+    |) in
+    b#draw ht1
+  )
+|)
+
+let read body ctx =
+let b = body ctx in
+(|
+  metadata = Arrow-Metadata.body-from-i b#metadata;
+  draw = fun ht -> (
+    let ht1 = (|
+      head = Arrow-Metadata.ht-to-i ht#head;
+      tail = Arrow-Metadata.ht-to-i ht#tail;
+    |) in
+    b#draw ht1
+  )
+|)
+
+let read-i body = body
 
 let none-1 = (|
   metadata = (|

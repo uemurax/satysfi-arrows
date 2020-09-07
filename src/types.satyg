@@ -1,21 +1,72 @@
 @import: lib/interval
 
 type arrow-body-metadata = (|
-  mid : Arrow-Interval.t;
-  head : Arrow-Interval.t;
-  tail : Arrow-Interval.t;
+  mid : (|
+    left : length;
+    right : length;
+  |);
+  head : (|
+    left : length;
+    right : length;
+  |);
+  tail : (|
+    left : length;
+    right : length;
+  |);
   length : length;
 |)
 type arrow-head-tail-metadata = (|
-  interval : Arrow-Interval.t;
+  left : length;
+  right : length;
   length : length;
   depth : length -> length;
 |)
 type arrow-head-metadata = arrow-head-tail-metadata
 type arrow-tail-metadata = arrow-head-tail-metadata
-
 type arrow-metadata = (|
-  body : arrow-body-metadata;
-  head : arrow-head-metadata;
-  tail : arrow-tail-metadata;
+  body : (|
+    left : length;
+    right : length;
+    length : length;
+  |);
+  head : (|
+    left : length;
+    right : length;
+    length : length;
+  |);
+  tail : (|
+    left : length;
+    right : length;
+    length : length;
+  |);
+|)
+
+% for internal usage
+
+type arrow-body-metadata-i = (|
+  mid : Arrow-Interval.t;
+  head : Arrow-Interval.t;
+  tail : Arrow-Interval.t;
+  length : length;
+|)
+type arrow-head-tail-metadata-i = (|
+  interval : Arrow-Interval.t;
+  length : length;
+  depth : length -> length;
+|)
+type arrow-head-metadata-i = arrow-head-tail-metadata-i
+type arrow-tail-metadata-i = arrow-head-tail-metadata-i
+type arrow-metadata-i = (|
+  body : (|
+    interval : Arrow-Interval.t;
+    length : length;
+  |);
+  head : (|
+    interval : Arrow-Interval.t;
+    length : length;
+  |);
+  tail : (|
+    interval : Arrow-Interval.t;
+    length : length;
+  |);
 |)

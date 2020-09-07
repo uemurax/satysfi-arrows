@@ -275,31 +275,52 @@ val vee : (|
       }
       +code(```
 type arrow-metadata = (|
-  body : arrow-body-metadata;
-  head : arrow-head-metadata;
-  tail : arrow-tail-metadata;
+  body : (|
+    left : length;
+    right : length;
+    length : length;
+  |);
+  head : (|
+    left : length;
+    right : length;
+    length : length;
+  |);
+  tail : (|
+    left : length;
+    right : length;
+    length : length;
+  |);
 |)
 ```);
       +p{
-        Metadata of an arrow consist of metadata of an arrow body, an arrow head and an arrow tail.
+        `body#left` and `body#right` are the coordinates of the left side and the right side, respectively, of the body facing the direction of the arrow.
+        `body#length` is the minimum length of the body.
+        The other components are similar.
       }
       +code(```
 type arrow-body-metadata = (|
-  mid : Arrow-Interval.t;
-  head : Arrow-Interval.t;
-  tail : Arrow-Interval.t;
+  mid : (|
+    left : length;
+    right : length;
+  |);
+  head : (|
+    left : length;
+    right : length;
+  |);
+  tail : (|
+    left : length;
+    right : length;
+  |);
   length : length;
 |)
 ```);
       +p{
-        Metadata of an arrow body consist of the intervals of the middle, the head and the tail of the arrow body and the minimum length of the arrow body.
-        An interval is a pair ${\paren{l, r}} of lengths such that ${l \leq r}.
-        The value `mid` contains the coordinates of the left side and the right side of the middle of the arrow body facing to the arrow direction.
-        The values `head` and `tail` are simlar.
+        Metadata of an arrow body consist of the coordinates of the left sides and the right sides of the middle, the head and the tail of the arrow body facing the direction of the arrow and the minimum length of the arrow body.
       }
       +code(```
 type arrow-head-tail-metadata = (|
-  interval : Arrow-Interval.t;
+  left : length;
+  right : length;
   length : length;
   depth : length -> length;
 |)
@@ -308,8 +329,9 @@ type arrow-tail-metadata = arrow-head-tail-metadata
 ```);
       +p{
         Metadata of arrow heads and arrow tails are the same.
-        `interval` and `length` are similar to those of `arrow-body-metadata`.
-        The function `depth` tells an arrow body the depth of the arrow head or tail at a position facing to the arrow direction.
+        `left` and `right` are the coordinates of the left side and the right side, respectively, of the arrow head or tail.
+        `length` is the length of the arrow head or tail.
+        The function `depth` tells an arrow body the depth of the arrow head or tail at a position facing the arrow direction.
         For example, the depth of the arrow head
         \eqn(${
           \draw!(Arrow.of-bth (|

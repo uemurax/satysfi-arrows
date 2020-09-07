@@ -94,25 +94,45 @@ val make : (context -> (|
 end = struct
 
 type t = context -> (|
-  metadata : arrow-metadata;
+  metadata : arrow-metadata-i;
   draw : point -> point -> graphics list;
 |)
 
-let make f = f
-let read rec ctx = rec ctx
+let make f ctx =
+let arr = f ctx in
+(|
+  metadata = Arrow-Metadata.arr-to-i arr#metadata;
+  draw = arr#draw;
+|)
+
+let read arr ctx =
+let rec = arr ctx in
+(|
+  metadata = Arrow-Metadata.arr-from-i rec#metadata;
+  draw = rec#draw;
+|)
 
 let of-bth rec ctx =
-let b = ArrowBody.read rec#body ctx in
+let b = ArrowBody.read-i rec#body ctx in
 let bm = b#metadata in
-let t = ArrowTail.read bm rec#tail ctx in
+let t = ArrowTail.read-i bm rec#tail ctx in
 let tm = t#metadata in
-let h = ArrowHead.read bm rec#head ctx in
+let h = ArrowHead.read-i bm rec#head ctx in
 let hm = h#metadata in
 (|
   metadata = (|
-    body = bm;
-    head = hm;
-    tail = tm;
+    body = (|
+      interval = bm#mid;
+      length = bm#length;
+    |);
+    head = (|
+      interval = Arrow-Interval.union hm#interval bm#head;
+      length = hm#length;
+    |);
+    tail = (|
+      interval = Arrow-Interval.union tm#interval bm#tail;
+      length = tm#length;
+    |)
   |);
   draw = fun from to -> (
     let a = Arrow-Point.(arg (to - from)) in
@@ -130,19 +150,15 @@ let md = a#metadata in
   metadata = (|
     body = (|
       md#body with
-      mid = Arrow-Interval.neg md#body#mid;
-      head = Arrow-Interval.neg md#body#tail;
-      tail = Arrow-Interval.neg md#body#head;
+      interval = Arrow-Interval.neg md#body#interval;
     |);
     head = (|
       md#tail with
       interval = Arrow-Interval.neg md#tail#interval;
-      depth = fun p -> md#tail#depth (Length.neg p);
     |);
     tail = (|
       md#head with
       interval = Arrow-Interval.neg md#head#interval;
-      depth = fun p -> md#head#depth (Length.neg p);
     |);
   |);
   draw = fun from to -> a#draw to from;

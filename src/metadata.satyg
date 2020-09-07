@@ -1,0 +1,75 @@
+@import: types
+@import: lib/interval
+
+module Arrow-Metadata = struct
+
+let body-to-i rec = (|
+  mid = Arrow-Interval.make rec#mid#left rec#mid#right;
+  head = Arrow-Interval.make rec#head#left rec#head#right;
+  tail = Arrow-Interval.make rec#tail#left rec#tail#right;
+  length = rec#length;
+|)
+
+let body-from-i rec = (|
+  mid = (|
+    left = Arrow-Interval.left rec#mid;
+    right = Arrow-Interval.right rec#mid;
+  |);
+  head = (|
+    left = Arrow-Interval.left rec#head;
+    right = Arrow-Interval.right rec#head;
+  |);
+  tail = (|
+    left = Arrow-Interval.left rec#tail;
+    right = Arrow-Interval.right rec#tail;
+  |);
+  length = rec#length;
+|)
+
+let ht-to-i rec = (|
+  interval = Arrow-Interval.make rec#left rec#right;
+  length = rec#length;
+  depth = rec#depth;
+|)
+
+let ht-from-i rec = (|
+  left = Arrow-Interval.left rec#interval;
+  right = Arrow-Interval.right rec#interval;
+  length = rec#length;
+  depth = rec#depth;
+|)
+
+let arr-to-i rec = (|
+  body = (|
+    interval = Arrow-Interval.make rec#body#left rec#body#right;
+    length = rec#body#length;
+  |);
+  head = (|
+    interval = Arrow-Interval.make rec#head#left rec#head#right;
+    length = rec#head#length;
+  |);
+  tail = (|
+    interval = Arrow-Interval.make rec#tail#left rec#tail#right;
+    length = rec#tail#length;
+  |);
+|)
+
+let arr-from-i rec = (|
+  body = (|
+    left = Arrow-Interval.left rec#body#interval;
+    right = Arrow-Interval.right rec#body#interval;
+    length = rec#body#length;
+  |);
+  head = (|
+    left = Arrow-Interval.left rec#head#interval;
+    right = Arrow-Interval.right rec#head#interval;
+    length = rec#head#length;
+  |);
+  tail = (|
+    left = Arrow-Interval.left rec#tail#interval;
+    right = Arrow-Interval.right rec#tail#interval;
+    length = rec#tail#length;
+  |);
+|)
+
+end

@@ -53,17 +53,18 @@ val to-head : t -> ArrowHead.t
 val from-head : ArrowHead.t -> t
 
 % mainly for internal usage
-val of-path : (arrow-body-metadata -> context -> (|
-  metadata : arrow-tail-metadata;
-  path : path;
-  stroke : path -> graphics;
-|)) -> t
 val make : (arrow-body-metadata -> context -> (|
   metadata : arrow-tail-metadata;
   draw : float -> graphics list;
 |)) -> t
 val read : arrow-body-metadata -> t -> context -> (|
   metadata : arrow-tail-metadata;
+  draw : float -> graphics list;
+|)
+
+% for internal usage
+val read-i : arrow-body-metadata-i -> t -> context -> (|
+  metadata : arrow-tail-metadata-i;
   draw : float -> graphics list;
 |)
 
@@ -74,6 +75,7 @@ type t = ht
 
 let make = ArrowHeadTail.make
 let read = ArrowHeadTail.read
+let read-i = ArrowHeadTail.read-i
 
 let none = ArrowHeadTail.none
 let union = ArrowHeadTail.union
@@ -84,7 +86,7 @@ let from-head h = ArrowHeadTail.flip (ArrowHead.to-ht h)
 let shift keep-depth p-f tail = from-head (ArrowHead.shift keep-depth p-f (to-head tail))
 let duplicate keep-depth n p-f tail = from-head (ArrowHead.duplicate keep-depth n p-f (to-head tail))
 
-let of-path f = make (fun body ctx -> (
+let of-path f = ArrowHeadTail.make-i (fun body ctx -> (
   let rec = f body ctx in
   (|
     metadata = rec#metadata;
