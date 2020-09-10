@@ -8,3 +8,13 @@ arrows in the style of [amsmath](https://www.ctan.org/pkg/amsmath).
 ## Features ##
 
 *   A variety of styles of arrow head, tail and body in arbitrary combination.
+
+## Install ##
+
+Using [Satyrographos](https://github.com/na4zagin3/satyrographos):
+
+```
+$ opam install satysfi-arrows
+$ opam install satysfi-arrows-doc # for documentation
+$ satyrographos install
+```
