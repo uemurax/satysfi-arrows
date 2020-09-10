@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased ##
 
+## [0.1.0] - 2020-09-07 ##
+
 ### Added ###
 
 - Add basic arrow styles.
 - Add math commands `\draw`, `\xrightarrow`, and `\xleftarrow`.
+
+[0.1.0]: https://github.com/uemurax/satysfi-arrows/releases/tag/v0.1.0
