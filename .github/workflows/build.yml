@@ -17,3 +17,24 @@ jobs:
           opam update
           opam pin add "file://${PWD}"
           satyrographos install -l arrows -l arrows-doc
+  regression-test:
+    name: Run regression test
+    runs-on: ubuntu-latest
+    container:
+      image: zeptometer/satysfi-yarn-diff-pdf:satysfi0.0.5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Yarn dependencies
+        run: yarn install
+      - name: Install Satyrographos dependencies
+        run: |
+          export HOME=/root
+          eval $(opam env)
+          opam update
+          opam pin add satysfi-arrows.opam "file://${PWD}"
+          satyrographos install -l arrows
+      - name: Run regression tests
+        run: |
+          export HOME=/root
+          eval $(opam env)
+          yarn test --ci
