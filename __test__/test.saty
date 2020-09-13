@@ -1,0 +1,103 @@
+@require: stdjareport
+@require: base/list-ext
+@require: base/block
+
+@import: ../src/arrows
+@import: ../src/commands
+
+open ArrowCommands
+
+let b1 = ArrowBody.solid (|width = 0.05|)
+let b2 = ArrowBody.dashed (|
+  width = 0.05;
+  dash = (|
+    fill = 0.15;
+    space = 0.15;
+    shift = 0.;
+  |);
+|)
+let b3 = ArrowBody.multiple 2 0.2 b1
+let b4 = ArrowBody.multiple 3 0.15 b2
+let cross = ArrowBody.cross (|
+  line-width = 0.05;
+  size = 0.1;
+  ext = 0.1;
+|)
+let b5 = cross b1
+let b6 = cross b4
+
+let h1 = ArrowHead.vee (|
+  line-width = 0.05;
+  size = 0.15;
+  ext = 0.1;
+|)
+let h2 = ArrowHead.harpoon-l (|
+  line-width = 0.05;
+  size = 0.1;
+  ext = 0.15;
+|)
+let h3 = ArrowHead.triangle (|
+  line-width = 0.05;
+  size = 0.1;
+  ext = 0.1;
+|)
+let h4 = ArrowHead.duplicate true 2 0.2 h1
+
+let t1 = ArrowTail.none
+let t2 = ArrowTail.vee (|
+  line-width = 0.05;
+  size = 0.15;
+  ext = 0.1;
+|)
+let t3 = ArrowTail.hook-l (|
+  line-width = 0.05;
+  size = 0.1;
+  ext = 0.15;
+|)
+let t4 = ArrowTail.vdash (|
+  line-width = 0.05;
+  size = 0.1;
+  ext = 0.15;
+|)
+let t5 = ArrowTail.duplicate false 2 0.2 t4
+
+let-block +cmd b h t = '<
+  +math(${
+    X \xrightarrow!(Arrow.of-bth (|
+      body = b;
+      head = h;
+      tail = t;
+    |)){g \circ f} Y
+  });
+>
+
+let-block ctx +of-list bt-l =
+bt-l
+|> List.map (fun bt -> Block.read bt ctx)
+|> Block.concat
+
+let-block +body = '<
+  +of-list(
+    [b1; b2; b3; b4; b5; b6]
+    |> List.map (fun b -> (
+      [h1; h2; h3; h4]
+      |> List.map (fun h -> (
+        [t1; t2; t3; t4; t5]
+        |> List.map (fun t -> (
+          '<+cmd(b)(h)(t);>
+        ))
+      ))
+      |> List.concat
+    ))
+    |> List.concat
+  );
+>
+
+in
+
+document (|
+  title = {Arrows test};
+  author = {Taichi Uemura};
+|) '<
+  +body;
+>
